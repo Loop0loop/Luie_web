@@ -3,9 +3,18 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
-import { DICTIONARY } from "@/constants/dictionary";
 
-export function DownloadSection() {
+interface DownloadProps {
+  dictionary: {
+    titleStart: string;
+    titleEnd: string;
+    description: string;
+    cta: string;
+    subtext: string;
+  };
+}
+
+export function DownloadSection({ dictionary }: DownloadProps) {
   return (
     <section className="container py-12 md:py-24 lg:py-32">
       <motion.div
@@ -19,12 +28,12 @@ export function DownloadSection() {
         
         <div className="flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            {DICTIONARY.download.titleStart}
+            {dictionary.titleStart}
             <br />
-            {DICTIONARY.download.titleEnd}
+            {dictionary.titleEnd}
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg text-zinc-300">
-            {DICTIONARY.download.description}
+            {dictionary.description}
           </p>
           <div className="mt-10 flex gap-x-6">
             <Button
@@ -32,11 +41,11 @@ export function DownloadSection() {
               className="bg-white text-black hover:bg-zinc-200 h-14 px-8 text-lg"
             >
               <Download className="mr-2 h-5 w-5" />
-              {DICTIONARY.download.cta}
+              {dictionary.cta}
             </Button>
           </div>
           <p className="mt-4 text-sm text-zinc-500">
-            {DICTIONARY.download.subtext}
+            {dictionary.subtext}
           </p>
         </div>
       </motion.div>
