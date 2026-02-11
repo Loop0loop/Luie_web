@@ -1,0 +1,16 @@
+# Dependencies
+/node_modules
+
+# Next.js build output
+.next
+
+# Environment variables
+.env
+
+# Package lock files
+/pnpm-lock.yaml
+
+# Agent files
+.agents
+.agent
+.agent
