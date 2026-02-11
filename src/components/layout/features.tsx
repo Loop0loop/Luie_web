@@ -9,23 +9,22 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Zap, Shield, Globe } from "lucide-react";
+import { DICTIONARY } from "@/constants/dictionary";
 
 const features = [
   {
-    title: "Lightning Fast",
-    description:
-      "Optimized for performance so you can work without interruptions.",
+    title: DICTIONARY.features.items[0].title,
+    description: DICTIONARY.features.items[0].description,
     icon: Zap,
   },
   {
-    title: "Secure by Design",
-    description:
-      "Your data is encrypted and protected with industry-leading security.",
+    title: DICTIONARY.features.items[1].title,
+    description: DICTIONARY.features.items[1].description,
     icon: Shield,
   },
   {
-    title: "Global Sync",
-    description: "Access your work from anywhere in the world, on any device.",
+    title: DICTIONARY.features.items[2].title,
+    description: DICTIONARY.features.items[2].description,
     icon: Globe,
   },
 ];
@@ -48,12 +47,12 @@ export function Features() {
 
   return (
     <section className="container py-12 md:py-24 lg:py-32">
-      <div className="mx-auto flex max-w-[58rem] flex-col items-center justify-center gap-4 text-center">
+      <div className="mx-auto flex max-w-232 flex-col items-center justify-center gap-4 text-center">
         <h2 className="text-3xl font-bold leading-[1.1] sm:text-3xl md:text-6xl">
-          Features
+          {DICTIONARY.features.title}
         </h2>
         <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-          Everything you need to take your productivity to the next level.
+          {DICTIONARY.features.subtitle}
         </p>
       </div>
       <motion.div
@@ -61,7 +60,7 @@ export function Features() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true }}
-        className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3 lg:gap-8 mt-12"
+        className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-5xl md:grid-cols-3 lg:gap-8 mt-12"
       >
         {features.map((feature, index) => (
           <motion.div key={index} variants={item}>
