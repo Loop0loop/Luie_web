@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { DICTIONARY } from "@/constants/dictionary";
 
 export function DownloadSection() {
   return (
@@ -14,17 +15,16 @@ export function DownloadSection() {
         viewport={{ once: true }}
         className="relative overflow-hidden rounded-3xl bg-black px-6 py-24 shadow-2xl sm:px-24 xl:py-32 dark:bg-zinc-900"
       >
-        <div className="absolute left-0 top-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-500/30 via-zinc-900/0 to-zinc-900/0"></div>
+        <div className="absolute left-0 top-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-indigo-500/30 via-zinc-900/0 to-zinc-900/0"></div>
         
         <div className="flex flex-col items-center text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Ready to get started?
+            {DICTIONARY.download.titleStart}
             <br />
-            Download Luie for PC today.
+            {DICTIONARY.download.titleEnd}
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg text-zinc-300">
-            Join thousands of developers who are building the future with Luie.
-            Available for macOS, Windows, and Linux.
+            {DICTIONARY.download.description}
           </p>
           <div className="mt-10 flex gap-x-6">
             <Button
@@ -32,11 +32,11 @@ export function DownloadSection() {
               className="bg-white text-black hover:bg-zinc-200 h-14 px-8 text-lg"
             >
               <Download className="mr-2 h-5 w-5" />
-              Download Now
+              {DICTIONARY.download.cta}
             </Button>
           </div>
           <p className="mt-4 text-sm text-zinc-500">
-            Free trial included. No credit card required.
+            {DICTIONARY.download.subtext}
           </p>
         </div>
       </motion.div>
