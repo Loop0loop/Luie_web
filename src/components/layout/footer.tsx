@@ -19,7 +19,7 @@ export function Footer({ dictionary, lang }: FooterProps) {
             Luie
           </Link>
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} 라이티브(Litive). {dictionary.rights}
+            © {new Date().getFullYear()} Loop. {dictionary.rights}
           </p>
         </div>
 

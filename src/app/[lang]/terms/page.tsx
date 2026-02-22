@@ -18,7 +18,7 @@ export default async function TermsOfServicePage({
         <div className="prose prose-zinc dark:prose-invert max-w-none text-muted-foreground leading-loose">
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 1 조 (목적)</h2>
           <p>
-            본 약관은 loop(이하 &quot;회사&quot;)가 제공하는 PC용 작가 워드프로세서 (이하 &quot;Luie&quot;)의 이용 조건 및 절차, 회원과 회사의 권리·의무 등 기본적인 사항을 규정함을 목적으로 합니다.
+            본 약관은 Loop(이하 &quot;회사&quot;)가 제공하는 PC용 작가 워드프로세서 (이하 &quot;Luie&quot;)의 이용 조건 및 절차, 회원과 회사의 권리·의무 등 기본적인 사항을 규정함을 목적으로 합니다.
           </p>
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 2 조 (정의)</h2>
