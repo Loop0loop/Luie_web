@@ -1,66 +1,207 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Download, ChevronRight } from "lucide-react";
+import { Download } from "lucide-react";
 
 interface HeroProps {
   dictionary: {
-    badge: string;
-    titleStart: string;
-    titleHighlight: string;
+    appName: string;
+    tagline: string;
     description: string;
     ctaDownload: string;
     ctaLearnMore: string;
   };
 }
 
-export function Hero({ dictionary }: HeroProps) {
-  return (
-    <section className="relative flex flex-col items-center justify-center overflow-hidden py-24 md:py-32 lg:py-40">
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
-        <div
-          className="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-        />
-      </div>
+const TYPEWRITER_PHRASES = [
+  "작가의 흐름을 방해하지 않는",
+  "집중할 수 있도록 설계된",
+  "이야기를 완성하도록 돕는",
+];
 
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-4 text-center">
+type TypewriterPhase = "typing" | "deleting";
+
+export function Hero({ dictionary }: HeroProps) {
+  const [displayed, setDisplayed] = useState("");
+  const [phraseIdx, setPhraseIdx] = useState(0);
+  const [phase, setPhase] = useState<TypewriterPhase>("typing");
+
+  useEffect(() => {
+    const current = TYPEWRITER_PHRASES[phraseIdx];
+
+    if (phase === "typing") {
+      if (displayed.length < current.length) {
+        const t = setTimeout(() => {
+          setDisplayed(current.slice(0, displayed.length + 1));
+        }, 75);
+        return () => clearTimeout(t);
+      } else {
+        const t = setTimeout(() => setPhase("deleting"), 2400);
+        return () => clearTimeout(t);
+      }
+    } else {
+      if (displayed.length > 0) {
+        const t = setTimeout(() => {
+          setDisplayed(current.slice(0, displayed.length - 1));
+        }, 38);
+        return () => clearTimeout(t);
+      } else {
+        setPhraseIdx((prev) => (prev + 1) % TYPEWRITER_PHRASES.length);
+        setPhase("typing");
+      }
+    }
+  }, [displayed, phase, phraseIdx]);
+
+  return (
+    <section
+      id="hero"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+    >
+      {/* Neutral paper background */}
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[hsl(40,18%,98%)] dark:bg-[hsl(240,3%,11%)]"
+      />
+      {/* Very subtle warm depth */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background: [
+            "radial-gradient(ellipse 80% 60% at 15% 40%, rgba(200,185,165,0.05) 0%, transparent 60%)",
+            "radial-gradient(ellipse 60% 50% at 85% 70%, rgba(180,170,155,0.03) 0%, transparent 55%)",
+          ].join(", "),
+        }}
+      />
+
+      <div className="container px-6 w-full">
+        <div className="grid gap-16 lg:grid-cols-2 lg:gap-20 items-center min-h-[calc(100vh-3.5rem)] py-24">
+          {/* Left — text */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+            className="flex flex-col gap-8"
           >
-            <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 mb-4 cursor-pointer">
-              <span className="mr-1">{dictionary.badge}</span>
-              <ChevronRight className="h-3 w-3" />
+            {/* Eyebrow */}
+            <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/35">
+              Word Processor · for Writers
+            </span>
+
+            {/* Typewriter heading */}
+            <div className="flex flex-col gap-2">
+              <h1 className="font-serif text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight leading-[1.2] text-foreground min-h-[2.4em]">
+                <span>{displayed}</span>
+                <motion.span
+                  animate={{ opacity: [1, 0, 1] }}
+                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                  className="inline-block w-[2px] h-[0.85em] bg-foreground/60 ml-1 align-[-0.1em] rounded-sm"
+                />
+              </h1>
+              <p className="font-serif text-xl sm:text-2xl text-foreground/25 font-normal italic">
+                워드프로세서, Luie
+              </p>
             </div>
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              {dictionary.titleStart}{" "}
-              <span className="text-primary">{dictionary.titleHighlight}</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+
+            {/* Description */}
+            <p className="text-base text-muted-foreground leading-relaxed max-w-xs">
               {dictionary.description}
             </p>
+
+            {/* CTA */}
+            <div className="flex flex-col items-start gap-2">
+              <Button
+                size="lg"
+                className="h-12 px-7 rounded-2xl font-medium text-sm
+                  bg-foreground text-background
+                  hover:opacity-75
+                  border-0
+                  transition-opacity duration-200"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                {dictionary.ctaDownload}
+              </Button>
+              <span className="text-[11px] text-foreground/28 pl-1">
+                macOS · 무료
+              </span>
+            </div>
           </motion.div>
 
+          {/* Right — editor mockup */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="space-x-4"
+            initial={{ opacity: 0, x: 32 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.1, delay: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+            className="hidden lg:flex items-center justify-center"
           >
-            <Button size="lg" className="h-12 px-8">
-              <Download className="mr-2 h-5 w-5" />
-              {dictionary.ctaDownload}
-            </Button>
-            <Button size="lg" variant="outline" className="h-12 px-8">
-              {dictionary.ctaLearnMore}
-            </Button>
+            <div
+              className="w-full max-w-[480px] rounded-3xl overflow-hidden
+                bg-white/80 dark:bg-white/[0.04]
+                backdrop-blur-2xl
+                border border-black/[0.06] dark:border-white/[0.07]
+                shadow-[0_16px_64px_rgba(0,0,0,0.07)] dark:shadow-[0_16px_64px_rgba(0,0,0,0.55)]"
+            >
+              {/* Window chrome */}
+              <div className="flex items-center gap-1.5 px-4 py-3.5 border-b border-black/[0.04] dark:border-white/[0.05] bg-black/[0.015] dark:bg-white/[0.02]">
+                <span className="w-3 h-3 rounded-full bg-rose-300/60" />
+                <span className="w-3 h-3 rounded-full bg-amber-300/60" />
+                <span className="w-3 h-3 rounded-full bg-emerald-300/60" />
+                <span className="ml-auto text-[11px] text-muted-foreground/35 font-mono">
+                  novel-chapter-01.luie
+                </span>
+              </div>
+
+              {/* Editor layout */}
+              <div className="grid grid-cols-[88px_1fr] divide-x divide-black/[0.04] dark:divide-white/[0.05] min-h-[340px]">
+                {/* Sidebar */}
+                <div className="bg-black/[0.01] dark:bg-white/[0.015] p-3 flex flex-col gap-1.5">
+                  {["1장", "2장", "3장", "4장"].map((ch, i) => (
+                    <div
+                      key={ch}
+                      className={`rounded-lg px-2.5 py-2 text-xs font-medium transition-colors ${
+                        i === 0
+                          ? "bg-foreground/[0.07] text-foreground/65"
+                          : "text-muted-foreground/30"
+                      }`}
+                    >
+                      {ch}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Content */}
+                <div className="p-7 space-y-3">
+                  <div className="text-xs font-medium text-muted-foreground/30 mb-5 font-serif">
+                    1장. 시작
+                  </div>
+                  {[76, 100, 88, 60, 0, 92, 100, 74, 52, 0, 68, 95].map((w, i) =>
+                    w === 0 ? (
+                      <div key={i} className="h-2" />
+                    ) : (
+                      <div
+                        key={i}
+                        className="h-2.5 rounded-full bg-foreground/[0.055]"
+                        style={{ width: `${w}%` }}
+                      />
+                    )
+                  )}
+                  {/* Cursor blink */}
+                  <div className="flex items-center gap-0.5 mt-1">
+                    <div
+                      className="h-2.5 rounded-full bg-foreground/[0.055]"
+                      style={{ width: "28%" }}
+                    />
+                    <motion.div
+                      animate={{ opacity: [1, 0, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.1 }}
+                      className="w-0.5 h-4 bg-foreground/35 rounded-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

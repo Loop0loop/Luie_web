@@ -1,41 +1,63 @@
 export const en = {
+  header: {
+    features: "Features",
+    security: "Security",
+    sync: "Sync",
+    download: "Download",
+  },
   hero: {
-    badge: "New Version 2.0 Released",
-    titleStart: "Build Faster with",
-    titleHighlight: "Luie",
-    description: "The ultimate PC application for developers. Streamline your workflow and boost productivity with our powerful tools.",
-    ctaDownload: "Download for Mac",
+    appName: "Luie",
+    tagline: "A word processor built for writers",
+    description: "Focus on your story. Luie handles the rest.",
+    ctaDownload: "Download Luie",
     ctaLearnMore: "Learn More",
   },
+  intro: {
+    eyebrow: "Designed for Writers",
+    title: "A word processor that never\ninterrupts your flow",
+    description:
+      "Luie strips away everything unnecessary\nso you can focus purely on writing.",
+    imageAlt: "Luie editor interface",
+  },
   features: {
-    title: "Features",
-    subtitle: "Everything you need to take your productivity to the next level.",
+    eyebrow: "Features",
+    title: "Luie is different",
+    subtitle: "Tools built for writers, not just note-takers",
     items: [
       {
-        title: "Lightning Fast",
-        description: "Optimized for performance so you can work without interruptions.",
+        title: "Character Tab",
+        description:
+          "Manage your characters and world-building in one place. Build a structured universe for your story.",
       },
       {
-        title: "Secure by Design",
-        description: "Your data is encrypted and protected with industry-leading security.",
+        title: "Smart Links",
+        description:
+          "Connect chapters, characters, and notes freely. Build complex narratives with intuitive relationships.",
       },
       {
-        title: "Global Sync",
-        description: "Access your work from anywhere in the world, on any device.",
+        title: "Flexible Layouts",
+        description:
+          "Choose the layout that fits your writing style. From focused mode to split-screen, Luie adapts to you.",
       },
     ],
   },
-  download: {
-    titleStart: "Ready to get started?",
-    titleEnd: "Download Luie for PC today.",
-    description: "Join thousands of developers who are building the future with Luie. Available for macOS, Windows, and Linux.",
-    cta: "Download Now",
-    subtext: "Free trial included. No credit card required.",
+  backup: {
+    eyebrow: "Safety First",
+    title: "Keep your manuscript safe",
+    description:
+      "Luie automatically creates restore points to protect your work. Even if the app closes unexpectedly, your writing is always safe.",
+    cta: "Learn more",
   },
-  header: {
-    download: "Download",
-    pricing: "Pricing",
-    sync: "Sync",
-    login: "Login",
+  sync: {
+    eyebrow: "Sync",
+    title: "Keep writing,\nfrom anywhere",
+    description:
+      "Continue on your Mac, iPad, or iPhone. Real-time sync ensures you're always working on the latest version of your manuscript.",
+  },
+  cta: {
+    title: "Luie is a word processor\nfor writers",
+    description:
+      "Have a suggestion? Your feedback helps make Luie a better tool for writers everywhere.",
+    cta: "Share your thoughts",
   },
 };

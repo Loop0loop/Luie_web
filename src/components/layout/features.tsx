@@ -1,91 +1,90 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Zap, Shield, Globe } from "lucide-react";
+import { Users, Link2, LayoutTemplate } from "lucide-react";
 
 interface FeaturesProps {
   dictionary: {
+    eyebrow: string;
     title: string;
     subtitle: string;
-    items: {
-      title: string;
-      description: string;
-    }[];
+    items: { title: string; description: string }[];
   };
 }
 
+const ICONS = [Users, Link2, LayoutTemplate];
+
+const slideUp = (delay = 0) => ({
+  hidden: { opacity: 0, y: 48 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  },
+});
+
 export function Features({ dictionary }: FeaturesProps) {
-  const features = [
-    {
-      title: dictionary.items[0].title,
-      description: dictionary.items[0].description,
-      icon: Zap,
-    },
-    {
-      title: dictionary.items[1].title,
-      description: dictionary.items[1].description,
-      icon: Shield,
-    },
-    {
-      title: dictionary.items[2].title,
-      description: dictionary.items[2].description,
-      icon: Globe,
-    },
-  ];
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
-  };
-
   return (
-    <section className="container py-12 md:py-24 lg:py-32">
-      <div className="mx-auto flex max-w-232 flex-col items-center justify-center gap-4 text-center">
-        <h2 className="text-3xl font-bold leading-[1.1] sm:text-3xl md:text-6xl">
-          {dictionary.title}
-        </h2>
-        <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
-          {dictionary.subtitle}
-        </p>
+    <section
+      id="features"
+      className="min-h-screen flex items-center py-20 bg-[hsl(40,8%,96%)] dark:bg-[hsl(240,3%,12%)]"
+    >
+      <div className="container px-6 w-full">
+        {/* Header */}
+        <motion.div
+          variants={slideUp(0)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          className="text-center mb-16"
+        >
+          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/35">
+            {dictionary.eyebrow}
+          </span>
+          <h2 className="font-serif mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
+            {dictionary.title}
+          </h2>
+          <p className="mt-4 text-muted-foreground max-w-sm mx-auto text-sm leading-relaxed">
+            {dictionary.subtitle}
+          </p>
+        </motion.div>
+
+        {/* Cards — glass */}
+        <div className="grid sm:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto">
+          {dictionary.items.map((item, i) => {
+            const Icon = ICONS[i];
+            return (
+              <motion.div
+                key={item.title}
+                variants={slideUp(i * 0.12)}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-60px" }}
+                className="rounded-3xl p-7 flex flex-col gap-5
+                  bg-white/70 dark:bg-white/[0.03]
+                  backdrop-blur-xl
+                  border border-black/[0.05] dark:border-white/[0.07]
+                  shadow-[0_4px_24px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]
+                  hover:shadow-[0_8px_36px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_36px_rgba(0,0,0,0.4)]
+                  hover:bg-white/90 dark:hover:bg-white/[0.05]
+                  transition-all duration-500"
+              >
+                <div className="w-11 h-11 rounded-2xl bg-foreground/[0.06] border border-foreground/[0.08] flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-foreground/55" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-base mb-2 text-foreground">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
-      <motion.div
-        variants={container}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-5xl md:grid-cols-3 lg:gap-8 mt-12"
-      >
-        {features.map((feature, index) => (
-          <motion.div key={index} variants={item}>
-            <Card className="h-full">
-              <CardHeader>
-                <feature.icon className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>{feature.title}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {/* Optional: Add more content or an image here */}
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
     </section>
   );
 }
