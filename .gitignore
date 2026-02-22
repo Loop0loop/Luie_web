@@ -1,5 +1,5 @@
 # Dependencies
-/node_modules
+node_modules
 
 # Next.js build output
 .next
@@ -8,9 +8,6 @@
 .env
 
 # Package lock files
-/pnpm-lock.yaml
-
-# Agent files
-.agents
-.agent
-.agent
+pnpm-workspace.yaml
+pnpm-lock.yaml
+tsconfig.tsbuildinfo
