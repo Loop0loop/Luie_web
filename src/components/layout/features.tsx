@@ -1,7 +1,5 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Users, Link2, LayoutTemplate } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 interface FeaturesProps {
   dictionary: {
@@ -14,15 +12,6 @@ interface FeaturesProps {
 
 const ICONS = [Users, Link2, LayoutTemplate];
 
-const slideUp = (delay = 0) => ({
-  hidden: { opacity: 0, y: 48 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  },
-});
-
 export function Features({ dictionary }: FeaturesProps) {
   return (
     <section
@@ -31,13 +20,7 @@ export function Features({ dictionary }: FeaturesProps) {
     >
       <div className="container px-6 w-full">
         {/* Header */}
-        <motion.div
-          variants={slideUp(0)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          className="text-center mb-16"
-        >
+        <ScrollReveal direction="up" className="text-center mb-16">
           <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/35">
             {dictionary.eyebrow}
           </span>
@@ -47,19 +30,17 @@ export function Features({ dictionary }: FeaturesProps) {
           <p className="mt-4 text-muted-foreground max-w-sm mx-auto text-sm leading-relaxed">
             {dictionary.subtitle}
           </p>
-        </motion.div>
+        </ScrollReveal>
 
         {/* Cards — glass */}
         <div className="grid sm:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto">
           {dictionary.items.map((item, i) => {
             const Icon = ICONS[i];
             return (
-              <motion.div
+              <ScrollReveal
                 key={item.title}
-                variants={slideUp(i * 0.12)}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-60px" }}
+                direction="up"
+                delay={i * 0.12}
                 className="rounded-3xl p-7 flex flex-col gap-5
                   bg-white/70 dark:bg-white/[0.03]
                   backdrop-blur-xl
@@ -80,7 +61,7 @@ export function Features({ dictionary }: FeaturesProps) {
                     {item.description}
                   </p>
                 </div>
-              </motion.div>
+              </ScrollReveal>
             );
           })}
         </div>

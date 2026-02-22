@@ -1,8 +1,6 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 interface CtaSectionProps {
   dictionary: {
@@ -29,11 +27,8 @@ export function CtaSection({ dictionary }: CtaSectionProps) {
       />
 
       <div className="container px-6 relative z-10 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 56 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true, margin: "-100px" }}
+        <ScrollReveal
+          direction="up"
           className="max-w-xl mx-auto text-center flex flex-col items-center"
         >
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-5 whitespace-pre-line leading-tight">
@@ -52,7 +47,7 @@ export function CtaSection({ dictionary }: CtaSectionProps) {
             {dictionary.cta}
             <ArrowRight className="w-4 h-4" />
           </Button>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );

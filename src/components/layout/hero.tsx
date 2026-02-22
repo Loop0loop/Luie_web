@@ -1,9 +1,7 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import { TypewriterHeading } from "@/components/ui/typewriter-heading";
 
 interface HeroProps {
   dictionary: {
@@ -21,39 +19,7 @@ const TYPEWRITER_PHRASES = [
   "이야기를 완성하도록 돕는",
 ];
 
-type TypewriterPhase = "typing" | "deleting";
-
 export function Hero({ dictionary }: HeroProps) {
-  const [displayed, setDisplayed] = useState("");
-  const [phraseIdx, setPhraseIdx] = useState(0);
-  const [phase, setPhase] = useState<TypewriterPhase>("typing");
-
-  useEffect(() => {
-    const current = TYPEWRITER_PHRASES[phraseIdx];
-
-    if (phase === "typing") {
-      if (displayed.length < current.length) {
-        const t = setTimeout(() => {
-          setDisplayed(current.slice(0, displayed.length + 1));
-        }, 75);
-        return () => clearTimeout(t);
-      } else {
-        const t = setTimeout(() => setPhase("deleting"), 2400);
-        return () => clearTimeout(t);
-      }
-    } else {
-      if (displayed.length > 0) {
-        const t = setTimeout(() => {
-          setDisplayed(current.slice(0, displayed.length - 1));
-        }, 38);
-        return () => clearTimeout(t);
-      } else {
-        setPhraseIdx((prev) => (prev + 1) % TYPEWRITER_PHRASES.length);
-        setPhase("typing");
-      }
-    }
-  }, [displayed, phase, phraseIdx]);
-
   return (
     <section
       id="hero"
@@ -79,12 +45,7 @@ export function Hero({ dictionary }: HeroProps) {
       <div className="container px-6 w-full">
         <div className="grid gap-16 lg:grid-cols-2 lg:gap-20 items-center min-h-[calc(100vh-3.5rem)] py-24">
           {/* Left — text */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-            className="flex flex-col gap-8"
-          >
+          <ScrollReveal direction="up" className="flex flex-col gap-8">
             {/* Eyebrow */}
             <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/35">
               Word Processor · for Writers
@@ -92,14 +53,7 @@ export function Hero({ dictionary }: HeroProps) {
 
             {/* Typewriter heading */}
             <div className="flex flex-col gap-2">
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-[3.25rem] xl:text-[3.75rem] font-bold tracking-tight leading-[1.2] text-foreground min-h-[2.4em]">
-                <span>{displayed}</span>
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                  className="inline-block w-[2px] h-[0.85em] bg-foreground/60 ml-1 align-[-0.1em] rounded-sm"
-                />
-              </h1>
+              <TypewriterHeading phrases={TYPEWRITER_PHRASES} />
               <p className="font-serif text-xl sm:text-2xl text-foreground/25 font-normal italic">
                 워드프로세서, Luie
               </p>
@@ -127,13 +81,13 @@ export function Hero({ dictionary }: HeroProps) {
                 macOS · 무료
               </span>
             </div>
-          </motion.div>
+          </ScrollReveal>
 
           {/* Right — editor mockup */}
-          <motion.div
-            initial={{ opacity: 0, x: 32 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1.1, delay: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+          <ScrollReveal
+            direction="left"
+            delay={0.25}
+            duration={1.1}
             className="hidden lg:flex items-center justify-center"
           >
             <div
@@ -193,16 +147,12 @@ export function Hero({ dictionary }: HeroProps) {
                       className="h-2.5 rounded-full bg-foreground/[0.055]"
                       style={{ width: "28%" }}
                     />
-                    <motion.div
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ repeat: Infinity, duration: 1.1 }}
-                      className="w-0.5 h-4 bg-foreground/35 rounded-full"
-                    />
+                    <div className="w-0.5 h-4 bg-foreground/35 rounded-full animate-blink" />
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

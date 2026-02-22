@@ -1,8 +1,6 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 interface BackupSectionProps {
   dictionary: {
@@ -30,11 +28,8 @@ export function BackupSection({ dictionary }: BackupSectionProps) {
       />
 
       <div className="container px-6 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 56 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          viewport={{ once: true, margin: "-100px" }}
+        <ScrollReveal
+          direction="up"
           className="max-w-2xl mx-auto text-center flex flex-col items-center"
         >
           {/* Icon — glass */}
@@ -72,7 +67,7 @@ export function BackupSection({ dictionary }: BackupSectionProps) {
             {dictionary.cta}
             <ArrowRight className="w-4 h-4" />
           </Button>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );

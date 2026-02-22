@@ -1,8 +1,6 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 interface DownloadProps {
   dictionary: {
@@ -17,11 +15,9 @@ interface DownloadProps {
 export function DownloadSection({ dictionary }: DownloadProps) {
   return (
     <section className="container py-12 md:py-24 lg:py-32">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true }}
+      <ScrollReveal
+        direction="scale"
+        duration={0.5}
         className="relative overflow-hidden rounded-3xl bg-black px-6 py-24 shadow-2xl sm:px-24 xl:py-32 dark:bg-zinc-900"
       >
         <div className="absolute left-0 top-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-indigo-500/30 via-zinc-900/0 to-zinc-900/0"></div>
@@ -48,7 +44,7 @@ export function DownloadSection({ dictionary }: DownloadProps) {
             {dictionary.subtext}
           </p>
         </div>
-      </motion.div>
+      </ScrollReveal>
     </section>
   );
 }

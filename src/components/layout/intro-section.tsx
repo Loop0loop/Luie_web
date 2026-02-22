@@ -1,6 +1,4 @@
-"use client";
-
-import { motion } from "framer-motion";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 interface IntroSectionProps {
   dictionary: {
@@ -11,16 +9,6 @@ interface IntroSectionProps {
   };
 }
 
-const slideLeft = {
-  hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
-};
-
-const slideRight = {
-  hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
-};
-
 export function IntroSection({ dictionary }: IntroSectionProps) {
   return (
     <section
@@ -30,13 +18,7 @@ export function IntroSection({ dictionary }: IntroSectionProps) {
       <div className="container px-6 w-full">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
           {/* Text */}
-          <motion.div
-            variants={slideLeft}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="flex flex-col gap-6"
-          >
+          <ScrollReveal direction="left" className="flex flex-col gap-6">
             <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/35">
               {dictionary.eyebrow}
             </span>
@@ -46,15 +28,10 @@ export function IntroSection({ dictionary }: IntroSectionProps) {
             <p className="text-muted-foreground leading-loose whitespace-pre-line text-base">
               {dictionary.description}
             </p>
-          </motion.div>
+          </ScrollReveal>
 
           {/* Editor mockup — glass card */}
-          <motion.div
-            variants={slideRight}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
+          <ScrollReveal direction="right" delay={0.15}>
             <div
               className="rounded-3xl overflow-hidden
                 bg-white/80 dark:bg-white/[0.04]
@@ -114,16 +91,12 @@ export function IntroSection({ dictionary }: IntroSectionProps) {
                       className="h-2.5 rounded-full bg-foreground/[0.055]"
                       style={{ width: "30%" }}
                     />
-                    <motion.div
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ repeat: Infinity, duration: 1.1 }}
-                      className="w-0.5 h-4 bg-foreground/35 rounded-full"
-                    />
+                    <div className="w-0.5 h-4 bg-foreground/35 rounded-full animate-blink" />
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </ScrollReveal>
         </div>
       </div>
     </section>
