@@ -8,6 +8,4 @@ node_modules
 .env
 
 # Package lock files
-pnpm-workspace.yaml
-pnpm-lock.yaml
 tsconfig.tsbuildinfo
