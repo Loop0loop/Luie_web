@@ -38,8 +38,8 @@ export default async function RootLayout({
   const dictionary = await getDictionary(lang);
 
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <body className={`${inter.variable} ${nanumMyeongjo.variable} font-sans antialiased`}>
+    <html lang={lang} suppressHydrationWarning className="scroll-smooth snap-y snap-mandatory">
+      <body className={`${inter.variable} ${nanumMyeongjo.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

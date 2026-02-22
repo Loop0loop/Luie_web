@@ -12,11 +12,11 @@ const DEVICES = [
 export function SyncVisual() {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -40 }}
+      initial={{ opacity: 0, x: 40 }}
       whileInView={{ opacity: 1, x: 0 }}
       transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
       viewport={{ once: true, margin: "-100px" }}
-      className="flex items-center justify-center order-last lg:order-first"
+      className="flex items-center justify-center order-last lg:order-last"
     >
       <div className="relative w-64 h-64">
         {/* Center cloud — glass */}

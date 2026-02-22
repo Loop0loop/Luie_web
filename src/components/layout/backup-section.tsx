@@ -15,7 +15,7 @@ export function BackupSection({ dictionary }: BackupSectionProps) {
   return (
     <section
       id="backup"
-      className="min-h-screen flex items-center py-20 relative overflow-hidden bg-[hsl(0,0%,100%)] dark:bg-[hsl(240,3%,9%)]"
+      className="relative flex flex-col justify-center overflow-hidden min-h-[100dvh] snap-start snap-always bg-muted/30"
     >
       {/* Very subtle warm tint */}
       <div
@@ -23,46 +23,43 @@ export function BackupSection({ dictionary }: BackupSectionProps) {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(180,170,155,0.04) 0%, transparent 55%)",
+            "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(200,185,165,0.03) 0%, transparent 55%)",
         }}
       />
 
-      <div className="container px-6 w-full">
+      <div className="container px-6 w-full py-24">
         <ScrollReveal
           direction="up"
           className="max-w-2xl mx-auto text-center flex flex-col items-center"
         >
-          {/* Icon — glass */}
+          {/* Icon */}
           <div
-            className="w-16 h-16 rounded-3xl mb-8 flex items-center justify-center
-              bg-white/60 dark:bg-white/[0.06]
-              backdrop-blur-xl
-              border border-black/[0.06] dark:border-white/[0.1]
-              shadow-[0_4px_20px_rgba(0,0,0,0.06)]"
+            className="w-14 h-14 rounded-2xl mb-8 flex items-center justify-center
+              bg-zinc-50 dark:bg-zinc-900
+              border border-black/5 dark:border-white/10
+              shadow-sm"
           >
-            <ShieldCheck className="w-8 h-8 text-foreground/55" />
+            <ShieldCheck className="w-6 h-6 text-zinc-600 dark:text-zinc-400" />
           </div>
 
-          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/35 mb-3">
+          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/40 mb-4">
             {dictionary.eyebrow}
           </span>
 
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-6 leading-tight">
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground mb-6 leading-tight text-balance">
             {dictionary.title}
           </h2>
 
-          <p className="text-muted-foreground leading-loose mb-10 max-w-lg text-base">
+          <p className="text-muted-foreground leading-loose mb-10 max-w-lg text-base text-balance">
             {dictionary.description}
           </p>
 
           <Button
-            variant="ghost"
-            className="gap-2 rounded-2xl text-foreground/60 hover:text-foreground
-              bg-foreground/[0.04] dark:bg-white/[0.05]
-              backdrop-blur-xl
-              border border-foreground/[0.08] dark:border-white/[0.08]
-              hover:bg-foreground/[0.07] dark:hover:bg-white/[0.1]
-              transition-all duration-300 font-medium"
+            variant="outline"
+            className="gap-2 rounded-xl text-foreground/80 hover:text-foreground
+              bg-transparent hover:bg-zinc-50 dark:hover:bg-zinc-900
+              border-black/10 dark:border-white/10
+              transition-all duration-300 font-medium h-11 px-6"
           >
             {dictionary.cta}
             <ArrowRight className="w-4 h-4" />

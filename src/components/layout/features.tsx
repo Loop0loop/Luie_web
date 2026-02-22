@@ -16,24 +16,24 @@ export function Features({ dictionary }: FeaturesProps) {
   return (
     <section
       id="features"
-      className="min-h-screen flex items-center py-20 bg-[hsl(40,8%,96%)] dark:bg-[hsl(240,3%,12%)]"
+      className="flex flex-col justify-center min-h-[100dvh] snap-start snap-always bg-background"
     >
-      <div className="container px-6 w-full">
+      <div className="container px-6 w-full py-24">
         {/* Header */}
         <ScrollReveal direction="up" className="text-center mb-16">
-          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/35">
+          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/40">
             {dictionary.eyebrow}
           </span>
-          <h2 className="font-serif mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground">
+          <h2 className="font-serif mt-3 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-foreground text-balance">
             {dictionary.title}
           </h2>
-          <p className="mt-4 text-muted-foreground max-w-sm mx-auto text-sm leading-relaxed">
+          <p className="mt-4 text-muted-foreground max-w-sm mx-auto text-base leading-relaxed text-balance">
             {dictionary.subtitle}
           </p>
         </ScrollReveal>
 
-        {/* Cards — glass */}
-        <div className="grid sm:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto">
+        {/* Cards — Bento Box Style */}
+        <div className="grid sm:grid-cols-3 gap-4 lg:gap-6 max-w-5xl mx-auto">
           {dictionary.items.map((item, i) => {
             const Icon = ICONS[i];
             return (
@@ -41,20 +41,17 @@ export function Features({ dictionary }: FeaturesProps) {
                 key={item.title}
                 direction="up"
                 delay={i * 0.12}
-                className="rounded-3xl p-7 flex flex-col gap-5
-                  bg-white/70 dark:bg-white/[0.03]
-                  backdrop-blur-xl
-                  border border-black/[0.05] dark:border-white/[0.07]
-                  shadow-[0_4px_24px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.3)]
-                  hover:shadow-[0_8px_36px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_8px_36px_rgba(0,0,0,0.4)]
-                  hover:bg-white/90 dark:hover:bg-white/[0.05]
-                  transition-all duration-500"
+                className="rounded-2xl p-8 flex flex-col gap-6
+                  bg-white dark:bg-zinc-900/80
+                  border border-black/5 dark:border-white/10
+                  shadow-sm hover:shadow-md
+                  transition-all duration-300"
               >
-                <div className="w-11 h-11 rounded-2xl bg-foreground/[0.06] border border-foreground/[0.08] flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-foreground/55" />
+                <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                  <Icon className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
                 </div>
                 <div>
-                  <h3 className="font-serif font-bold text-base mb-2 text-foreground">
+                  <h3 className="font-serif font-bold text-lg mb-2 text-foreground">
                     {item.title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">

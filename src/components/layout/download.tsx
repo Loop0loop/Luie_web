@@ -14,33 +14,33 @@ interface DownloadProps {
 
 export function DownloadSection({ dictionary }: DownloadProps) {
   return (
-    <section className="container py-12 md:py-24 lg:py-32">
+    <section className="container py-24 lg:py-32">
       <ScrollReveal
         direction="scale"
         duration={0.5}
-        className="relative overflow-hidden rounded-3xl bg-black px-6 py-24 shadow-2xl sm:px-24 xl:py-32 dark:bg-zinc-900"
+        className="relative overflow-hidden rounded-2xl bg-zinc-950 px-6 py-24 shadow-xl sm:px-24 xl:py-32 border border-black/10 dark:border-white/10"
       >
-        <div className="absolute left-0 top-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-indigo-500/30 via-zinc-900/0 to-zinc-900/0"></div>
+        <div className="absolute left-0 top-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-zinc-800/40 via-zinc-950/0 to-zinc-950/0"></div>
         
         <div className="flex flex-col items-center text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="font-serif text-3xl font-bold tracking-tight text-zinc-50 sm:text-4xl text-balance">
             {dictionary.titleStart}
             <br />
             {dictionary.titleEnd}
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-zinc-300">
+          <p className="mx-auto mt-6 max-w-xl text-base text-zinc-400 text-balance">
             {dictionary.description}
           </p>
           <div className="mt-10 flex gap-x-6">
             <Button
               size="lg"
-              className="bg-white text-black hover:bg-zinc-200 h-14 px-8 text-lg"
+              className="bg-zinc-50 text-zinc-950 hover:bg-zinc-200 h-11 px-8 text-sm font-medium rounded-xl transition-colors duration-200"
             >
-              <Download className="mr-2 h-5 w-5" />
+              <Download className="mr-2 h-4 w-4" />
               {dictionary.cta}
             </Button>
           </div>
-          <p className="mt-4 text-sm text-zinc-500">
+          <p className="mt-4 text-xs text-zinc-500">
             {dictionary.subtext}
           </p>
         </div>
