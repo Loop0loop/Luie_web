@@ -18,14 +18,14 @@ export default async function TermsOfServicePage({
         <div className="prose prose-zinc dark:prose-invert max-w-none text-muted-foreground leading-loose">
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 1 조 (목적)</h2>
           <p>
-            본 약관은 라이티브(이하 &quot;회사&quot;)가 제공하는 PC용 AI 텍스트 에디터 애플리케이션(이하 &quot;Luie&quot;)의 이용 조건 및 절차, 회원과 회사의 권리·의무 등 기본적인 사항을 규정함을 목적으로 합니다.
+            본 약관은 loop(이하 &quot;회사&quot;)가 제공하는 PC용 작가 워드프로세서 (이하 &quot;Luie&quot;)의 이용 조건 및 절차, 회원과 회사의 권리·의무 등 기본적인 사항을 규정함을 목적으로 합니다.
           </p>
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 2 조 (정의)</h2>
           <ul className="list-decimal pl-6 space-y-2">
             <li><strong>&quot;회원&quot;</strong>이라 함은 본 약관에 따라 회사와 이용계약을 체결하고 서비스를 이용하는 자를 말합니다.</li>
             <li><strong>&quot;비회원&quot;</strong>이라 함은 회원 가입 없이 서비스를 이용하는 자를 말합니다.</li>
-            <li><strong>&quot;AI 편집 보조 기능&quot;</strong>이라 함은 인공지능 기술을 활용하여 실시간 편집 및 교정, 추천 기능, 채팅 등을 제공하는 서비스를 의미합니다.</li>
+            <li><strong>&quot;AI 분석기능&quot;</strong>이라 함은 인공지능 기술을 활용하여 피드백 및 교정, 등을 제공하는 서비스를 의미합니다.</li>
           </ul>
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 3 조 (약관의 효력 및 변경)</h2>
@@ -36,7 +36,7 @@ export default async function TermsOfServicePage({
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 4 조 (서비스의 제공 및 변경)</h2>
           <ul className="list-decimal pl-6 space-y-2">
-            <li>회사는 AI 편집 보조 기능, 텍스트 편집 도구, 문서 저장 및 공유 기능 등 다양한 서비스를 제공합니다.</li>
+            <li>회사는 AI 분석기능, 텍스트 편집 도구, 문서 저장 및 공유 기능 등 다양한 서비스를 제공합니다.</li>
             <li>회사는 서비스의 개선 및 보안을 위해 서비스의 일부 또는 전부를 변경하거나 중단할 수 있으며, 이로 인한 책임은 회사의 귀책 사유가 없는 한 면책됩니다.</li>
           </ul>
 
@@ -88,7 +88,7 @@ export default async function TermsOfServicePage({
             <li>
               <strong>환불 절차</strong>
               <ul className="list-disc pl-6 mt-2 space-y-1">
-                <li>환불 요청은 이메일(<a href="mailto:team@typetak.com" className="text-foreground underline">team@typetak.com</a>)을 통해 신청할 수 있습니다.</li>
+                <li>환불 요청은 이메일(<a href="mailto:sakills914@gmail.com" className="text-foreground underline">sakills914@gmail.com</a>)을 통해 신청할 수 있습니다.</li>
                 <li>요청 시, 계정 아이디, 이메일 주소, 환불 사유 및 관련 증빙 자료(필요시)를 함께 제출해주십시오.</li>
               </ul>
             </li>
@@ -105,7 +105,7 @@ export default async function TermsOfServicePage({
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 9 조 (책임의 한계 및 면책조항)</h2>
           <ul className="list-decimal pl-6 space-y-2">
             <li>회사는 서비스 제공과 관련하여 회원에게 발생한 손해에 대하여 고의 또는 중대한 과실이 없는 한 책임을 지지 않습니다.</li>
-            <li>AI 편집 보조 기능은 참고용으로 제공되며, 그로 인한 편집 오류 또는 결과에 대해서 회사는 어떠한 책임도 부담하지 않습니다.</li>
+            <li>AI 분석기능은 참고용으로 제공되며, 그로 인한 분석 오류 또는 결과에 대해서 회사는 어떠한 책임도 부담하지 않습니다.</li>
           </ul>
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">제 10 조 (분쟁 해결 및 준거법)</h2>
@@ -121,7 +121,7 @@ export default async function TermsOfServicePage({
 
           <div className="mt-16 pt-8 border-t border-border text-sm">
             <p><strong>[부칙]</strong></p>
-            <p>본 약관은 2025년 2월 13일부터 시행합니다.</p>
+            <p>본 약관은 2026년 2월 23일부터 시행합니다.</p>
           </div>
         </div>
       </div>

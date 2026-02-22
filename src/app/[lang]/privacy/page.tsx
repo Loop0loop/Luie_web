@@ -17,7 +17,7 @@ export default async function PrivacyPolicyPage({
 
         <div className="prose prose-zinc dark:prose-invert max-w-none text-muted-foreground leading-loose">
           <p>
-            라이티브(이하 &quot;회사&quot;)는 회원 관리, 서비스 제공, AI 기능 개선, 통계 분석, 고객 지원, 안내, 그리고 사용자 피드백 수집을 목적으로 개인정보를 수집·이용합니다.
+            loop(이하 &quot;회사&quot;)는 회원 관리, 서비스 제공, AI 기능 개선, 통계 분석, 고객 지원, 안내, 그리고 사용자 피드백 수집을 목적으로 개인정보를 수집·이용합니다.
           </p>
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">1. 수집하는 개인정보 항목 및 수집 방법</h2>
@@ -86,7 +86,7 @@ export default async function PrivacyPolicyPage({
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">8. 이용자의 권리와 행사 방법</h2>
           <p>
-            이용자는 언제든지 개인정보의 열람, 정정, 삭제, 처리 정지를 요청할 수 있으며, 관련 요청은 고객센터(이메일: <a href="mailto:team@typetak.com" className="text-foreground underline">team@typetak.com</a>)로 문의하시면 됩니다.
+            이용자는 언제든지 개인정보의 열람, 정정, 삭제, 처리 정지를 요청할 수 있으며, 관련 요청은 고객센터(이메일: <a href="mailto:sakills914@gmail.com" className="text-foreground underline">sakills914@gmail.com</a>)로 문의하시면 됩니다.
           </p>
 
           <h2 className="text-foreground font-bold mt-10 mb-4 text-xl">9. 개인정보처리방침 변경</h2>
@@ -96,7 +96,7 @@ export default async function PrivacyPolicyPage({
 
           <div className="mt-16 pt-8 border-t border-border text-sm">
             <p><strong>[부칙]</strong></p>
-            <p>본 개인정보처리방침은 2025년 2월 21일부터 시행합니다.</p>
+            <p>본 개인정보처리방침은 2026년 2월 23일부터 시행합니다.</p>
           </div>
         </div>
       </div>
