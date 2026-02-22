@@ -60,4 +60,10 @@ export const en = {
       "Have a suggestion? Your feedback helps make Luie a better tool for writers everywhere.",
     cta: "Share your thoughts",
   },
+  footer: {
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+    contact: "Contact Us",
+    rights: "All rights reserved.",
+  },
 };

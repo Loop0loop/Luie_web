@@ -60,4 +60,10 @@ export const ko = {
       "더 제안할 것이 있으신가요? 작가님의 의견이 Luie를 더 좋은 도구로 만듭니다.",
     cta: "의견 나누기",
   },
+  footer: {
+    privacy: "개인정보 처리방침",
+    terms: "이용약관",
+    contact: "문의하기",
+    rights: "All rights reserved.",
+  },
 };

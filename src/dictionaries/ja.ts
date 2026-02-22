@@ -59,4 +59,10 @@ export const ja = {
       "ご提案はありますか？あなたのフィードバックがLuieをより良いツールにします。",
     cta: "意見を共有する",
   },
+  footer: {
+    privacy: "プライバシーポリシー",
+    terms: "利用規約",
+    contact: "お問い合わせ",
+    rights: "All rights reserved.",
+  },
 };

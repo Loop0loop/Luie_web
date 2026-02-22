@@ -3,6 +3,7 @@ import { Inter, Nanum_Myeongjo } from "next/font/google";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 import { getDictionary } from "@/lib/dictionary";
 
 const inter = Inter({
@@ -48,6 +49,7 @@ export default async function RootLayout({
         >
           <Header dictionary={dictionary.header} />
           {children}
+          <Footer dictionary={dictionary.footer} lang={lang} />
         </ThemeProvider>
       </body>
     </html>
