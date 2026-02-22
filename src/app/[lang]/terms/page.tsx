@@ -9,7 +9,7 @@ export default async function TermsOfServicePage({
   const dictionary = await getDictionary(lang);
 
   return (
-    <main className="min-h-screen bg-background py-24 lg:py-32">
+    <main className="bg-background py-24 lg:py-32">
       <div className="container max-w-3xl px-6">
         <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-12">
           {dictionary.footer.terms}
@@ -82,7 +82,7 @@ export default async function TermsOfServicePage({
               <ul className="list-disc pl-6 mt-2 space-y-1">
                 <li>결제 관련 오류: 중복 결제나 결제 과정의 오류가 확인될 경우, 고객 지원팀을 통해 환불 처리합니다.</li>
                 <li>서비스 품질 문제: 기능상 심각한 오류가 장시간 발생한 경우, 고객 지원팀에서 검토 후 환불 요청을 승인할 수 있습니다.</li>
-                <li>단순 변심: 초기 7일 이내에 신청된 단순 변심에 따른 환불은 전액 환불 대상이나, AI 기능 사용 횟수가 500회 이상의 경우, 부분 환불이 이루어질 수 있습니다.</li>
+                <li>단순 변심: 초기 7일 이내에 신청된 단순 변심에 따른 환불은 전액 환불 대상이나, 부분 환불이 이루어질 수 있습니다.</li>
               </ul>
             </li>
             <li>

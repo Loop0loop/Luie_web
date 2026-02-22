@@ -12,7 +12,7 @@ interface FooterProps {
 
 export function Footer({ dictionary, lang }: FooterProps) {
   return (
-    <footer className="border-t border-border bg-background py-12 snap-start snap-always">
+    <footer className="border-t border-border bg-background py-12">
       <div className="container px-6 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center md:items-start gap-2">
           <Link href={`/${lang}`} className="font-serif font-bold text-lg tracking-tight text-foreground">

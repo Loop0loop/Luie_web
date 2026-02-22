@@ -9,7 +9,7 @@ export default async function PrivacyPolicyPage({
   const dictionary = await getDictionary(lang);
 
   return (
-    <main className="min-h-screen bg-background py-24 lg:py-32">
+    <main className="bg-background py-24 lg:py-32">
       <div className="container max-w-3xl px-6">
         <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-12">
           {dictionary.footer.privacy}

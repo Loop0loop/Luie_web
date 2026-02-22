@@ -39,7 +39,7 @@ export default async function RootLayout({
   const dictionary = await getDictionary(lang);
 
   return (
-    <html lang={lang} suppressHydrationWarning className="scroll-smooth snap-y snap-mandatory">
+    <html lang={lang} suppressHydrationWarning className="scroll-smooth">
       <body className={`${inter.variable} ${nanumMyeongjo.variable} font-sans antialiased bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"
@@ -47,9 +47,13 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header dictionary={dictionary.header} />
-          {children}
-          <Footer dictionary={dictionary.footer} lang={lang} />
+          <div className="flex flex-col min-h-screen">
+            <Header dictionary={dictionary.header} />
+            <div className="flex-1">
+              {children}
+            </div>
+            <Footer dictionary={dictionary.footer} lang={lang} />
+          </div>
         </ThemeProvider>
       </body>
     </html>

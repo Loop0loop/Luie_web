@@ -15,7 +15,7 @@ export default async function Home({
   const dictionary = await getDictionary(lang);
 
   return (
-    <main>
+    <main className="snap-y snap-mandatory h-[calc(100vh-3.5rem)] overflow-y-auto">
       <Hero dictionary={dictionary.hero} />
       <IntroSection dictionary={dictionary.intro} />
       <Features dictionary={dictionary.features} />
