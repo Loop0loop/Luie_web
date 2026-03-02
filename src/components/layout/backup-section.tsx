@@ -1,6 +1,7 @@
-import { ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 interface BackupSectionProps {
   dictionary: {
@@ -30,16 +31,16 @@ export function BackupSection({ dictionary }: BackupSectionProps) {
       <div className="container px-6 w-full py-24">
         <ScrollReveal
           direction="up"
-          className="max-w-2xl mx-auto text-center flex flex-col items-center"
+          className="max-w-4xl mx-auto text-center flex flex-col items-center"
         >
-          {/* Icon */}
-          <div
-            className="w-14 h-14 rounded-2xl mb-8 flex items-center justify-center
-              bg-zinc-50 dark:bg-zinc-900
-              border border-black/5 dark:border-white/10
-              shadow-sm"
-          >
-            <ShieldCheck className="w-6 h-6 text-zinc-600 dark:text-zinc-400" />
+          {/* Snap Image */}
+          <div className="relative w-full max-w-2xl aspect-video mx-auto mb-12 rounded-2xl overflow-hidden shadow-2xl border border-border/10">
+            <Image
+              src="/assets/section-3/snap.png"
+              alt="Backup Feature"
+              fill
+              className="object-cover"
+            />
           </div>
 
           <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/40 mb-4">

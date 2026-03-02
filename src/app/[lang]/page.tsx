@@ -16,7 +16,7 @@ export default async function Home({
 
   return (
     <main className="snap-y snap-mandatory h-[calc(100vh-3.5rem)] overflow-y-auto">
-      <Hero dictionary={dictionary.hero} />
+      <Hero dictionary={dictionary.hero} />         
       <IntroSection dictionary={dictionary.intro} />
       <Features dictionary={dictionary.features} />
       <BackupSection dictionary={dictionary.backup} />

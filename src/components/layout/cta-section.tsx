@@ -38,6 +38,7 @@ export function CtaSection({ dictionary }: CtaSectionProps) {
             {dictionary.description}
           </p>
           <Button
+            asChild
             size="lg"
             className="h-11 px-8 rounded-xl font-medium text-sm gap-2 border border-transparent
               bg-zinc-50 text-zinc-950
@@ -45,8 +46,10 @@ export function CtaSection({ dictionary }: CtaSectionProps) {
               shadow-sm
               transition-colors duration-200"
           >
-            {dictionary.cta}
-            <ArrowRight className="w-4 h-4" />
+            <a href="/api/download/latest">
+              {dictionary.cta}
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </Button>
         </ScrollReveal>
       </div>

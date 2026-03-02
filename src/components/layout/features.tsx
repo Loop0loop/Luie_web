@@ -1,16 +1,23 @@
-import { Users, Link2, LayoutTemplate } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import Image from "next/image";
 
 interface FeaturesProps {
   dictionary: {
     eyebrow: string;
     title: string;
     subtitle: string;
-    items: { title: string; description: string }[];
+    items: {
+      title: string;
+      description: string;
+    }[];
   };
 }
 
-const ICONS = [Users, Link2, LayoutTemplate];
+const FEATURE_IMAGES = [
+  "/assets/section-2/chr.png",
+  "/assets/section-2/smartLink.png",
+  "/assets/section-2/layout.png",
+];
 
 export function Features({ dictionary }: FeaturesProps) {
   return (
@@ -33,25 +40,34 @@ export function Features({ dictionary }: FeaturesProps) {
         </ScrollReveal>
 
         {/* Cards — Bento Box Style */}
-        <div className="grid sm:grid-cols-3 gap-4 lg:gap-6 max-w-5xl mx-auto">
+        <div className="grid sm:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
           {dictionary.items.map((item, i) => {
-            const Icon = ICONS[i];
+            const imagePath = FEATURE_IMAGES[i];
             return (
               <ScrollReveal
                 key={item.title}
                 direction="up"
                 delay={i * 0.12}
-                className="rounded-2xl p-8 flex flex-col gap-6
-                  bg-white dark:bg-zinc-900/80
-                  border border-black/5 dark:border-white/10
-                  shadow-sm hover:shadow-md
-                  transition-all duration-300"
+                className="group relative rounded-3xl overflow-hidden
+                  bg-muted/30 hover:bg-muted/50
+                  border border-border/50
+                  transition-all duration-500"
               >
-                <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+                {/* Image Container */}
+                <div className="relative w-full aspect-[4/3] overflow-hidden bg-background">
+                  {imagePath && (
+                    <Image
+                      src={imagePath}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  )}
                 </div>
-                <div>
-                  <h3 className="font-serif font-bold text-lg mb-2 text-foreground">
+                
+                {/* Content */}
+                <div className="p-6 md:p-8">
+                  <h3 className="font-serif font-bold text-lg mb-3 text-foreground">
                     {item.title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
