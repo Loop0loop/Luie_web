@@ -6,17 +6,13 @@ import { SyncSection } from "@/components/layout/sync-section";
 import { CtaSection } from "@/components/layout/cta-section";
 import { getDictionary } from "@/lib/dictionary";
 
-export default async function Home({
-  params,
-}: {
-  params: Promise<{ lang: string }>;
-}) {
+export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params;
   const dictionary = await getDictionary(lang);
 
   return (
-    <main className="snap-y snap-mandatory h-[calc(100vh-3.5rem)] overflow-y-auto">
-      <Hero dictionary={dictionary.hero} />         
+    <main className="overflow-hidden">
+      <Hero dictionary={dictionary.hero} />
       <IntroSection dictionary={dictionary.intro} />
       <Features dictionary={dictionary.features} />
       <BackupSection dictionary={dictionary.backup} />

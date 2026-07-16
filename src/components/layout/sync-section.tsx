@@ -10,24 +10,35 @@ interface SyncSectionProps {
 
 export function SyncSection({ dictionary }: SyncSectionProps) {
   return (
-    <section
-      id="sync"
-      className="flex flex-col justify-center min-h-[100dvh] snap-start snap-always bg-background"
-    >
-      <div className="container px-6 w-full py-24">
+    <section id="sync" className="bg-[#111216] py-24 sm:py-32 lg:py-40">
+      <div className="container px-6">
         <ScrollReveal
           direction="up"
-          className="flex flex-col gap-6 items-center text-center max-w-2xl mx-auto"
+          className="mx-auto grid max-w-5xl items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24"
         >
-          <span className="text-[10px] font-medium uppercase tracking-[0.3em] text-foreground/40">
-            {dictionary.eyebrow}
-          </span>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight whitespace-pre-line text-foreground text-balance">
-            {dictionary.title}
-          </h2>
-          <p className="text-muted-foreground leading-loose text-base text-balance">
-            {dictionary.description}
-          </p>
+          <div className="flex flex-col items-start">
+            <span className="text-xs font-medium tracking-[0.04em] text-primary">
+              {dictionary.eyebrow}
+            </span>
+            <h2 className="mt-5 text-4xl font-medium leading-[1.04] tracking-[-0.065em] text-balance text-foreground sm:text-5xl lg:text-6xl whitespace-pre-line">
+              {dictionary.title}
+            </h2>
+            <p className="mt-7 max-w-md text-base leading-8 text-muted-foreground sm:text-lg">
+              {dictionary.description}
+            </p>
+          </div>
+          <div className="grid min-h-[300px] grid-cols-3 border-y border-foreground/15 sm:min-h-[360px]">
+            {["Mac", "iPad", "iPhone"].map((device) => (
+              <div
+                key={device}
+                className="flex items-center justify-center border-r border-foreground/15 last:border-r-0"
+              >
+                <span className="text-lg font-medium tracking-[-0.04em] text-foreground">
+                  {device}
+                </span>
+              </div>
+            ))}
+          </div>
         </ScrollReveal>
       </div>
     </section>

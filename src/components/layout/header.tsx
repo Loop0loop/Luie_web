@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 interface HeaderProps {
   dictionary: {
@@ -26,25 +25,22 @@ export function Header({ dictionary }: HeaderProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-      <div className="container flex h-14 items-center">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#090a0c]/85 backdrop-blur-xl">
+      <div className="container flex h-16 items-center">
         {/* Logo */}
         <div className="mr-6 flex items-center">
-          <Link
-            href="/"
-            className="font-serif font-bold text-base tracking-tight text-foreground"
-          >
+          <Link href="/" className="text-lg font-semibold tracking-[-0.06em] text-white">
             Luie
           </Link>
         </div>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm">
+        <nav className="hidden items-center gap-8 text-sm md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="text-zinc-500 transition-colors hover:text-white"
             >
               {link.label}
             </Link>
@@ -53,7 +49,7 @@ export function Header({ dictionary }: HeaderProps) {
 
         {/* Mobile menu button */}
         <button
-          className="inline-flex items-center justify-center rounded-md h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors md:hidden"
+          className="inline-flex h-9 w-9 items-center justify-center text-zinc-400 transition-colors hover:text-white md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -61,15 +57,11 @@ export function Header({ dictionary }: HeaderProps) {
         </button>
 
         {/* Right actions */}
-        <div className="flex flex-1 items-center justify-end gap-2">
-          <ThemeToggle />
+        <div className="flex flex-1 items-center justify-end">
           <Button
             asChild
             size="sm"
-            className="hidden md:inline-flex h-8 px-4 text-xs rounded-lg
-              bg-foreground text-background
-              hover:opacity-75 border-0
-              transition-opacity duration-200"
+            className="hidden h-9 rounded-md bg-white px-4 text-xs font-medium text-black transition-colors hover:bg-zinc-200 md:inline-flex"
           >
             <Link href="#hero">{dictionary.download}</Link>
           </Button>

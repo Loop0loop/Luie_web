@@ -40,18 +40,18 @@ export default async function RootLayout({
 
   return (
     <html lang={lang} suppressHydrationWarning className="scroll-smooth">
-      <body className={`${inter.variable} ${nanumMyeongjo.variable} font-sans antialiased bg-background text-foreground`}>
+      <body
+        className={`${inter.variable} ${nanumMyeongjo.variable} font-sans antialiased bg-background text-foreground`}
+      >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          forcedTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <div className="flex flex-col min-h-screen">
             <Header dictionary={dictionary.header} />
-            <div className="flex-1">
-              {children}
-            </div>
+            <div className="flex-1">{children}</div>
             <Footer dictionary={dictionary.footer} lang={lang} />
           </div>
         </ThemeProvider>

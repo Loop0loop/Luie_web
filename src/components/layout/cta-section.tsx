@@ -12,39 +12,22 @@ interface CtaSectionProps {
 
 export function CtaSection({ dictionary }: CtaSectionProps) {
   return (
-    <section
-      id="cta"
-      className="relative flex flex-col justify-center overflow-hidden min-h-[100dvh] snap-start snap-always bg-zinc-950 text-zinc-50"
-    >
-      {/* Very subtle depth gradient */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 70% at 50% 60%, rgba(255,255,255,0.04) 0%, transparent 55%)",
-        }}
-      />
-
-      <div className="container px-6 relative z-10 w-full py-24">
+    <section id="cta" className="bg-[#08090b] py-24 text-zinc-50 sm:py-32 lg:py-40">
+      <div className="container px-6">
         <ScrollReveal
           direction="up"
-          className="max-w-xl mx-auto text-center flex flex-col items-center"
+          className="mx-auto flex max-w-3xl flex-col items-center text-center"
         >
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-50 mb-5 whitespace-pre-line leading-tight text-balance">
+          <h2 className="text-4xl font-medium leading-[1.04] tracking-[-0.065em] text-zinc-50 text-balance sm:text-5xl lg:text-6xl whitespace-pre-line">
             {dictionary.title}
           </h2>
-          <p className="text-zinc-400 leading-loose mb-10 text-base max-w-sm text-balance">
+          <p className="mt-7 max-w-lg text-base leading-8 text-zinc-400 sm:text-lg">
             {dictionary.description}
           </p>
           <Button
             asChild
             size="lg"
-            className="h-11 px-8 rounded-xl font-medium text-sm gap-2 border border-transparent
-              bg-zinc-50 text-zinc-950
-              hover:bg-zinc-200
-              shadow-sm
-              transition-colors duration-200"
+            className="mt-10 h-12 rounded-md bg-white px-6 text-sm font-medium text-black transition-colors hover:bg-white/85"
           >
             <a href="/api/download/latest">
               {dictionary.cta}
