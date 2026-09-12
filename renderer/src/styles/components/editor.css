@@ -1,0 +1,520 @@
+/* NOTE: Tailwind가 제어하지 못하는 ProseMirror 내부 typography는 이 파일을 source of truth로 사용한다. */
+[data-editor-scroll-container="true"] {
+    scroll-padding-top: var(--editor-scroll-padding, 120px);
+    scroll-padding-bottom: var(--editor-scroll-padding, 120px);
+}
+
+.editor-color-hue-slider {
+    appearance: none;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: linear-gradient(to right, #ef4444, #f59e0b, #22c55e, #06b6d4, #3b82f6, #a855f7, #ec4899, #ef4444);
+    cursor: pointer;
+}
+
+.editor-color-hue-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 0.875rem;
+    height: 0.875rem;
+    border: 2px solid var(--bg-panel);
+    border-radius: 9999px;
+    background: var(--accent-bg);
+    box-shadow: 0 0 0 1px var(--border-default);
+}
+
+/* WARNING: ProseMirror root에 `white-space: pre-wrap`을 적용하면 자체 whitespace 처리와 충돌한다. */
+.tiptap .ProseMirror {
+    outline: none;
+    flex: 1;
+    min-height: 100%;
+    height: auto;
+    width: 100%;
+    /* NOTE: 본문 잉크는 UI 글자색과 갈라질 수 있는 별도 역할이다. `--editor-text`가
+       기본적으로 `--text-primary`를 alias하므로 값은 같고, theme에서 갈라질 때만
+       달라진다. 여기서 `--text-primary`를 직접 쓰면 role token이 죽는다. */
+    color: var(--editor-text, var(--text-primary));
+
+    /* NOTE: CSS variable로 주입해 store 변경을 editor 재생성 없이 반영한다. */
+    font-size: 1rem;
+    line-height: var(--editor-line-height, 1.6);
+    letter-spacing: var(--editor-letter-spacing, 0);
+    word-spacing: var(--editor-word-spacing, 0);
+    word-break: keep-all;
+    overflow-wrap: break-word;
+
+    caret-color: var(--accent-bg, #2563eb);
+    text-size-adjust: 100%;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-kerning: normal;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+.tiptap .ProseMirror::after {
+    content: "";
+    display: block;
+    height: var(--editor-typewriter-tail-space, 42vh);
+}
+
+.tiptap .ProseMirror p.is-editor-empty:first-child::before {
+    color: var(--text-tertiary);
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}
+
+.tiptap .ProseMirror p {
+    margin-top: 0;
+    margin-bottom: var(--editor-paragraph-spacing, 0.8em);
+    line-height: var(--editor-line-height, 1.6);
+    min-height: calc(var(--editor-font-size, 1rem) * var(--editor-line-height, 1.6));
+}
+
+.tiptap .ProseMirror h1,
+.tiptap .ProseMirror h2,
+.tiptap .ProseMirror h3,
+.tiptap .ProseMirror h4 {
+    color: var(--text-primary);
+    font-weight: 700;
+    line-height: 1.35;
+    word-break: keep-all;
+}
+
+.tiptap .ProseMirror h1 {
+    font-size: 1.875rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-top: 2.2em;
+    margin-bottom: 0.6em;
+}
+
+.tiptap .ProseMirror h2 {
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+}
+
+.tiptap .ProseMirror h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-top: 1.4em;
+    margin-bottom: 0.4em;
+    color: var(--text-primary);
+}
+
+.tiptap .ProseMirror h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 1.1em;
+    margin-bottom: 0.3em;
+    color: var(--text-secondary);
+}
+
+.tiptap .ProseMirror hr {
+    border: none;
+    border-top: 1.5px solid var(--border-strong);
+    margin: 2.5em 0;
+    width: 100%;
+    opacity: 1;
+}
+
+/* NOTE: Tailwind reset이 제거한 list marker를 editor 안에서 복원한다. */
+.tiptap .ProseMirror ul {
+    list-style-type: disc;
+    padding-left: 1.4em;
+    margin: 0.5em 0 1em;
+}
+
+.tiptap .ProseMirror ol {
+    list-style-type: decimal;
+    padding-left: 1.4em;
+    margin: 0.5em 0 1em;
+}
+
+.tiptap .ProseMirror ul ul,
+.tiptap .ProseMirror ol ul {
+    list-style-type: circle;
+    margin: 0.15em 0;
+}
+
+.tiptap .ProseMirror ol ol,
+.tiptap .ProseMirror ul ol {
+    list-style-type: lower-alpha;
+    margin: 0.15em 0;
+}
+
+.tiptap .ProseMirror li {
+    margin: 0.25em 0;
+    line-height: 1.7;
+}
+
+.tiptap .ProseMirror li > p {
+    margin: 0.05em 0;
+}
+
+.tiptap .ProseMirror ul[data-type="taskList"] {
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin: 0.4em 0 0.8em !important;
+}
+
+.tiptap .ProseMirror ul[data-type="taskList"] li[data-type="taskItem"],
+.tiptap .ProseMirror li[data-type="taskItem"] {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    gap: 0.4rem !important;
+    margin: 0.2rem 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    line-height: 1.5;
+}
+
+.tiptap .ProseMirror li[data-type="taskItem"] > label {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    width: 1rem;
+    height: 1.5em; /* 텍스트의 line-height(1.5)와 일치시켜 첫 줄 세로 중앙에 완벽 배치 */
+    user-select: none;
+    cursor: pointer;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.tiptap .ProseMirror li[data-type="taskItem"] > label > input[type="checkbox"] {
+    cursor: pointer;
+    width: 0.95rem;
+    height: 0.95rem;
+    margin: 0 !important;
+    padding: 0 !important;
+    accent-color: var(--accent-bg, #2563eb);
+}
+
+.tiptap .ProseMirror li[data-type="taskItem"] > div {
+    flex: 1 1 auto !important;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.tiptap .ProseMirror li[data-type="taskItem"] > div > p {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    line-height: 1.5 !important;
+}
+
+.tiptap .ProseMirror li[data-type="taskItem"][data-checked="true"] > div,
+.tiptap .ProseMirror li[data-type="taskItem"][data-checked="true"] > div > p {
+    color: var(--text-tertiary);
+    text-decoration: line-through;
+}
+
+.tiptap .ProseMirror blockquote {
+    border-left: 3px solid var(--border-strong);
+    background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent);
+    padding: 0.6rem 1.15rem;
+    margin: 1.6em 0;
+    border-radius: 0 var(--radius-control) var(--radius-control) 0;
+    color: var(--text-secondary);
+    font-style: normal;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.tiptap .ProseMirror blockquote p {
+    margin: 0.25em 0;
+    line-height: 1.7;
+}
+
+.tiptap .ProseMirror blockquote p:first-child { margin-top: 0; }
+.tiptap .ProseMirror blockquote p:last-child { margin-bottom: 0; }
+
+.tiptap .ProseMirror code {
+    background-color: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+    padding: 0.15em 0.38em;
+    border-radius: 5px;
+    border: 1px solid var(--border-default);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.88em;
+    color: var(--text-primary);
+    letter-spacing: 0;
+    word-spacing: 0;
+}
+
+.tiptap .ProseMirror pre {
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-control);
+    padding: 1.1rem 1.3rem;
+    margin: 1.6em 0;
+    border: 1px solid var(--border-default);
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    overflow: visible;
+    box-shadow: var(--shadow-control);
+}
+
+.tiptap .ProseMirror pre code {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    font-size: 0.88em;
+    font-family: var(--font-mono, monospace);
+    color: var(--text-primary);
+    letter-spacing: 0;
+    word-spacing: 0;
+    white-space: pre-wrap;
+    word-break: break-all;
+    display: block;
+}
+
+/* NOTE: Notion 스타일 Callout 내부 텍스트 완벽한 상하 중앙 정렬 */
+.tiptap .ProseMirror .callout .callout-content,
+.tiptap .ProseMirror .callout-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.tiptap .ProseMirror .callout .callout-content p,
+.tiptap .ProseMirror .callout-content p {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    line-height: 1.5 !important;
+}
+
+.tiptap .ProseMirror .callout .callout-content p + p,
+.tiptap .ProseMirror .callout-content p + p {
+    margin-top: 0.35em !important;
+}
+
+.tiptap .ProseMirror details.toggle {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0.6em 0;
+}
+
+.tiptap .ProseMirror details.toggle summary {
+    cursor: pointer;
+    list-style: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    color: var(--text-primary);
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-control);
+    transition: background-color 0.15s ease;
+    user-select: none;
+}
+
+.tiptap .ProseMirror details.toggle summary:hover {
+    background-color: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
+}
+
+.tiptap .ProseMirror details.toggle summary::-webkit-details-marker {
+    display: none;
+}
+
+.tiptap .ProseMirror details.toggle summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 0.5rem;
+    font-size: 0.85rem;
+    transform-origin: center;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--text-tertiary);
+    font-style: normal;
+}
+
+.tiptap .ProseMirror details.toggle[open] summary::before {
+    transform: rotate(90deg);
+    color: var(--text-secondary);
+}
+
+.tiptap .ProseMirror details.toggle > div {
+    padding-left: 1.4rem;
+    margin-top: 0.25rem;
+    margin-left: 0.65rem;
+    border-left: 1.5px solid color-mix(in srgb, var(--border-default) 60%, transparent);
+    color: var(--text-primary);
+}
+
+/* WARNING: smart-link 색상은 Editor.tsx가 주입하는 entityColors CSS variable과 함께 변경해야 한다. */
+.tiptap .ProseMirror .smart-link-highlight {
+    cursor: pointer;
+    border-radius: var(--radius-control);
+    /* WHY clone인가: inline decoration이라 하이라이트가 줄바꿈에서 조각으로 쪼개진다.
+       기본값(slice)이면 잘린 면이 각지게 남아 둥근 모서리가 깨져 보인다. */
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding: 0.05em 0.28em;
+    background-color: color-mix(in srgb, currentColor 12%, transparent);
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+    text-decoration: none;
+    position: relative;
+    z-index: 10;
+}
+
+.tiptap .ProseMirror .smart-link-highlight[data-type="character"] {
+    color: var(--entity-character-color, #2563eb);
+}
+
+.tiptap .ProseMirror .smart-link-highlight[data-type="event"] {
+    color: var(--entity-event-color, #d97706);
+}
+
+.tiptap .ProseMirror .smart-link-highlight[data-type="faction"] {
+    color: var(--entity-faction-color, #059669);
+}
+
+.tiptap .ProseMirror .smart-link-highlight[data-type="term"] {
+    color: var(--entity-term-color, #7c3aed);
+}
+
+.tiptap .ProseMirror .smart-link-highlight:not([data-type]) {
+    color: var(--accent-bg, #2563eb);
+}
+
+.tiptap .ProseMirror .smart-link-highlight:hover {
+    background-color: color-mix(in srgb, currentColor 22%, transparent);
+}
+
+/* NOTE: Diff decoration은 링크 밑줄보다 우선해 변경 종류를 같은 색으로 설명한다. */
+.tiptap .ProseMirror .diff-highlight-added {
+    text-decoration-color: var(--success-fg);
+}
+
+.tiptap .ProseMirror .diff-highlight-removed {
+    text-decoration-color: var(--danger-fg);
+}
+
+.tiptap .ProseMirror a {
+    color: var(--text-accent, #2563eb);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--text-accent, #2563eb) 50%, transparent);
+    cursor: pointer;
+    transition: text-decoration-color 0.15s ease;
+}
+
+.tiptap .ProseMirror a:hover {
+    text-decoration-color: var(--text-accent, #2563eb);
+}
+
+/* NOTE: 형광펜·글자색은 인라인 스타일이 아니라 커스텀 프로퍼티로 전달된다(§11).
+   `ThemedHighlight`/`ThemedColor`가 `--luie-mark`/`--luie-ink`만 세우므로 인라인
+   `background-color`/`color` 선언이 없고, 따라서 여기서 `!important` 없이 그릴 수 있다.
+
+   폴백은 색을 고르지 않은 mark(예: 옛 문서의 무색 mark)를 위한 것이다. accent 18%는
+   이전 규칙이 쓰던 값을 유지한다. */
+.tiptap .ProseMirror mark {
+    background-color: var(
+        --luie-mark,
+        color-mix(in srgb, var(--accent-bg, #2563eb) 18%, transparent)
+    );
+    color: inherit;
+    border-radius: 2px;
+    padding: 0.05em 0.1em;
+}
+
+.tiptap .ProseMirror [style*="--luie-ink"] {
+    color: var(--luie-ink);
+}
+
+.tiptap .ProseMirror s {
+    color: var(--text-tertiary);
+}
+
+.tiptap .ProseMirror ::selection {
+    background-color: var(--editor-selection, #bfdbfe);
+    color: inherit;
+}
+
+.custom-scrollbar::-webkit-scrollbar        { width: 5px; height: 5px; }
+.custom-scrollbar::-webkit-scrollbar-track  { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb  {
+    background-color: var(--border-default);
+    border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-tertiary);
+}
+
+/* NOTE: 짧은 entity panel에서는 manuscript 전용 typewriter tail과 full-height를 제거한다. */
+.entity-document .ProseMirror {
+    min-height: 16rem;
+    height: auto;
+    flex: none;
+    line-height: 1.7;
+}
+.entity-document .ProseMirror::after {
+    content: none;
+    height: 0;
+    display: none;
+}
+
+.entity-document .ProseMirror h1 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+    margin-top: 3.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+.entity-document .ProseMirror h1:first-child {
+    margin-top: 0.5rem;
+}
+/* NOTE: 내용이 없어 연속된 헤딩 사이의 최소 섹션 간격 */
+.entity-document .ProseMirror h1 + h1 {
+    margin-top: 5rem;
+}
+
+/* NOTE: 본문 문단은 엔터 간격이 벌어지지 않도록 일반적인 텍스트 줄간격으로 유지 */
+.entity-document .ProseMirror p {
+    margin-top: 0;
+    margin-bottom: 0.35rem;
+    min-height: 1.5rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.entity-document .ProseMirror .is-empty::before {
+    content: attr(data-placeholder);
+    color: var(--text-tertiary);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+.entity-document .ProseMirror blockquote {
+    margin: 1.25em 0;
+    padding: 0.7rem 1rem 0.7rem 1.1rem;
+    border: none;
+    border-left: 2px solid var(--border-active);
+    border-radius: 8px;
+    background: var(--bg-surface-hover);
+    color: var(--text-primary);
+    font-style: normal;
+}
+.entity-document .ProseMirror blockquote p {
+    margin: 0.3em 0;
+    font-style: normal;
+}
+.entity-document .ProseMirror blockquote p:first-child { margin-top: 0; }
+.entity-document .ProseMirror blockquote p:last-child { margin-bottom: 0; }

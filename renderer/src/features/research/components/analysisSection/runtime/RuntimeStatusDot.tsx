@@ -1,0 +1,75 @@
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { LlmRuntimeInfo, UtilitySidecarStatus } from "@shared/types";
+import { RuntimeStatusPanel } from "./RuntimeStatusPanel";
+import { sidecarStatusTone } from "./runtimeHelpers";
+
+type RuntimeStatusDotProps = {
+  runtimeInfo: LlmRuntimeInfo | null;
+  sidecarStatus: UtilitySidecarStatus | null;
+};
+
+const resolveDotTone = (
+  runtimeInfo: LlmRuntimeInfo | null,
+  sidecarStatus: UtilitySidecarStatus | null,
+): string => {
+  if (runtimeInfo?.fallbackUsed) return "text-warning";
+  if (sidecarStatus) return sidecarStatusTone(sidecarStatus.status);
+  return "text-success-fg";
+};
+
+export function RuntimeStatusDot({
+  runtimeInfo,
+  sidecarStatus,
+}: RuntimeStatusDotProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  if (!runtimeInfo) return null;
+
+  const tone = resolveDotTone(runtimeInfo, sidecarStatus);
+
+  const panelId = "runtime-status-panel";
+
+  return (
+    <div className="relative shrink-0" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-surface-hover transition-colors"
+        title={t("analysis.runtime.statusTitle")}
+        aria-label={t("analysis.runtime.statusTitle")}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-controls={panelId}
+      >
+        <span
+          className={`w-1.5 h-1.5 rounded-full bg-current ${tone} ${
+            runtimeInfo.fallbackUsed ? "animate-pulse" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div id={panelId} role="dialog" aria-modal="false" className="absolute bottom-9 right-0 w-64 z-50 animate-[fadeIn_0.15s_ease-out]">
+          <RuntimeStatusPanel
+            runtimeInfo={runtimeInfo}
+            sidecarStatus={sidecarStatus}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,237 @@
+import { lazy, Suspense, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FileText, Tags, StickyNote, History, AlertCircle } from "lucide-react";
+import { useChapterStore } from "@renderer/features/manuscript/stores/chapterStore";
+import { cn } from "@shared/types/utils";
+
+const SnapshotList = lazy(() =>
+  import("@renderer/features/snapshot/components/SnapshotList").then(
+    (module) => ({
+      default: module.SnapshotList,
+    }),
+  ),
+);
+
+interface InspectorPanelProps {
+  activeChapterId?: string;
+}
+
+type InspectorTab = "synopsis" | "metadata" | "notes" | "snapshots";
+
+export default function InspectorPanel({
+  activeChapterId,
+}: InspectorPanelProps) {
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<InspectorTab>("synopsis");
+  const chapters = useChapterStore((state) => state.items);
+  const update = useChapterStore((state) => state.update);
+
+  const activeChapter = chapters.find((c) => c.id === activeChapterId);
+
+  const [synopsis, setSynopsis] = useState(activeChapter?.synopsis || "");
+
+  useEffect(() => {
+    // 외부 chapter store가 비동기로 채워지는 경우에도 Inspector 입력값을 현재 장과 맞춘다.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 외부 store 동기화에 필요한 단방향 반영이다.
+    setSynopsis(activeChapter?.synopsis || "");
+  }, [activeChapter?.synopsis, activeChapterId]);
+
+  const handleSynopsisChange = (val: string) => {
+    setSynopsis(val);
+  };
+
+  const handleSynopsisBlur = () => {
+    if (
+      activeChapterId &&
+      activeChapter &&
+      synopsis !== activeChapter.synopsis
+    ) {
+      update({ id: activeChapterId, synopsis });
+    }
+  };
+
+  if (!activeChapterId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-muted p-4 text-center">
+        <AlertCircle className="w-8 h-8 mb-2 opacity-50" />
+        <p className="text-sm">{t("inspector.noSelection")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full bg-panel border-l border-border text-sm">
+      <div className="flex items-center justify-around border-b border-border bg-surface/50 p-1">
+        <InspectorTabButton
+          icon={<FileText className="w-4 h-4" />}
+          isActive={activeTab === "synopsis"}
+          onClick={() => setActiveTab("synopsis")}
+          title={t("inspector.tab.synopsis")}
+        />
+        <InspectorTabButton
+          icon={<Tags className="w-4 h-4" />}
+          isActive={activeTab === "metadata"}
+          onClick={() => setActiveTab("metadata")}
+          title={t("inspector.tab.metadata")}
+        />
+        <InspectorTabButton
+          icon={<StickyNote className="w-4 h-4" />}
+          isActive={activeTab === "notes"}
+          onClick={() => setActiveTab("notes")}
+          title={t("inspector.tab.notes")}
+        />
+        <InspectorTabButton
+          icon={<History className="w-4 h-4" />}
+          isActive={activeTab === "snapshots"}
+          onClick={() => setActiveTab("snapshots")}
+          title={t("inspector.tab.snapshots")}
+        />
+      </div>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
+        {activeTab === "synopsis" && (
+          <div className="p-4 flex flex-col h-full">
+            <div className="bg-index-card border border-index-card-border rounded-panel p-3 shadow-control h-64 flex flex-col relative">
+              <div className="border-b border-index-card-border pb-2 mb-2 font-bold text-center text-fg/80 truncate">
+                {activeChapter?.title || "Untitled"}
+              </div>
+              {/* NOTE: `focus:ring-0`은 §4가 남긴 의도된 예외다 — 전면 집필 표면에서는
+                  캐럿이 focus를 알린다. §11-9에서 전역 `:focus-visible` outline을 도입하면서
+                  이 예외가 깨졌으므로 `outline-hidden`을 함께 둔다(`SynopsisEditor:347`는
+                  이미 갖고 있었다). */}
+              <textarea
+                className="flex-1 w-full bg-transparent border-none resize-none outline-hidden focus:ring-0 text-sm p-0 leading-relaxed placeholder:text-muted/50"
+                placeholder={t("inspector.synopsis.placeholder")}
+                value={synopsis}
+                onChange={(e) => handleSynopsisChange(e.target.value)}
+                onBlur={handleSynopsisBlur}
+              />
+            </div>
+
+            <div className="mt-6">
+              <h3 className="text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+                {t("inspector.section.image")}
+              </h3>
+              <div className="aspect-video bg-surface/50 border border-border rounded-panel flex items-center justify-center text-muted border-dashed">
+                <span className="text-xs">
+                  {t("inspector.image.placeholder")}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "metadata" && (
+          <div className="p-4 space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted">
+                  {t("inspector.meta.created")}
+                </label>
+                <div className="text-sm font-mono" suppressHydrationWarning>
+                  {activeChapter?.createdAt
+                    ? new Date(activeChapter.createdAt).toLocaleString()
+                    : "-"}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted">
+                  {t("inspector.meta.modified")}
+                </label>
+                <div className="text-sm font-mono" suppressHydrationWarning>
+                  {activeChapter?.updatedAt
+                    ? new Date(activeChapter.updatedAt).toLocaleString()
+                    : "-"}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted">
+                  {t("inspector.meta.words")}
+                </label>
+                <div className="text-sm font-mono">
+                  {activeChapter?.wordCount ?? 0} words
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-4 space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted">
+                  {t("inspector.meta.label")}
+                </label>
+                <select className="w-full bg-surface border border-border-strong rounded px-2 py-1 text-sm focus:outline-hidden focus:ring-2 focus:ring-ring">
+                  <option>{t("inspector.label.none")}</option>
+                  <option>{t("inspector.label.concept")}</option>
+                  <option>{t("inspector.label.draft")}</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-muted">
+                  {t("inspector.meta.status")}
+                </label>
+                <select className="w-full bg-surface border border-border-strong rounded px-2 py-1 text-sm focus:outline-hidden focus:ring-2 focus:ring-ring">
+                  <option>{t("inspector.status.todo")}</option>
+                  <option>{t("inspector.status.inprogress")}</option>
+                  <option>{t("inspector.status.done")}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "notes" && (
+          <div className="p-0 h-full flex flex-col">
+            <div className="px-4 py-2 bg-surface/50 border-b border-border text-xs font-medium text-muted">
+              {t("inspector.notes.document")}
+            </div>
+            <div className="p-4 text-xs text-muted flex flex-col items-center justify-center h-full opacity-60">
+              <p>
+                {t("inspector.notes.comingSoon") ||
+                  "Document notes coming soon..."}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "snapshots" && (
+          <div className="h-full flex flex-col">
+            <Suspense
+              fallback={
+                <div className="p-4 text-xs text-muted">{t("loading")}</div>
+              }
+            >
+              <SnapshotList chapterId={activeChapterId} />
+            </Suspense>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function InspectorTabButton({
+  icon,
+  isActive,
+  onClick,
+  title,
+}: {
+  icon: React.ReactNode;
+  isActive: boolean;
+  onClick: () => void;
+  title: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      aria-label={title}
+      aria-pressed={isActive}
+      className={cn(
+        "p-2 rounded transition-colors text-muted hover:text-fg",
+        isActive && "bg-accent/10 text-accent",
+      )}
+    >
+      {icon}
+    </button>
+  );
+}
