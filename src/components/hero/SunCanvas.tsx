@@ -98,6 +98,9 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
     const resize = () => {
       const { clientWidth, clientHeight } = canvas;
       if (clientWidth === 0 || clientHeight === 0) return;
+      // DPR은 매번 다시 읽는다 — 마운트 시점 값에 고정하면 웹뷰 배율이
+      // 바뀐 뒤 버퍼/CSS 크기가 어긋나 가장자리에 렌더 찌꺼기가 생긴다.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, MAX_PIXEL_RATIO));
       renderer.setSize(clientWidth, clientHeight, false);
       const dpr = renderer.getPixelRatio();
       uniforms.uResolution.value.set(clientWidth * dpr, clientHeight * dpr);

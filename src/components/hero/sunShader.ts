@@ -8,9 +8,9 @@
  * - 필라멘트: 완만한 비등방 노이즈 결
  * - 림: 가장자리 다어케닝 후 얇은 금색 대기선
  * - 코로나: 금색, 넓고 낮은 강도로 천천히 숨쉬기
- * - 라이트: 금환일식(annular eclipse) 진행형 — 달이 아래에서 떠올라 태양을
- *   물어 덮고 완식에서 얇은 백열 금환이 남는다. 무광 달 실루엣 + 3단 블룸,
- *   하드 외곽선 없음.
+ * - 라이트: 금환일식(annular eclipse) 진행형 — 태양과 같은 크기의 달이 아래에서
+ *   떠올라 태양을 물어 덮고(다크 채움과 동일 범위), 착지 시 림에 백열 빛 고리.
+ *   무광 달 실루엣 + 3단 블룸, 하드 외곽선 없음.
  */
 export const SUN_VERTEX = /* glsl */ `
 varying vec2 vUv;
@@ -208,12 +208,13 @@ void main() {
   float terminator = exp(-abs(dist - rLine) * 22.0) * midFill * (1.0 - outside);
   col = mix(col, vec3(1.0, 0.70, 0.40), terminator * 0.30);
 
-  // 라이트 금환일식 — 스크롤에 따라 달이 아래에서 떠올라 태양을 물어 덮고,
-  // 완식에서 얇은 백열 금환(ring of fire)이 남는다. 달 궤도가 항상 태양 원반
+  // 라이트 금환일식 — 스크롤에 따라 태양과 같은 크기의 달이 아래에서 떠올라
+  // 태양을 물어 덮고, 완식에서는 다크 모드의 빛 채움과 같은 범위까지 원반을
+  // 통째로 가린 다음 림에 백열 빛 고리를 두른다. 달 궤도가 항상 태양 원반
   // 안쪽이라 하늘로 검은 원반이 드러나는 일은 없고, 외곽은 전부 지수 감쇠
   // 블룸으로 마감해 하드 외곽선을 남기지 않는다.
-  float moonScale = 0.965; // 달/태양 반경비 — 금환 두께를 정한다
-  float moonRise = R * (1.0 - moonScale) - limbAboveSeam - 0.015; // 화면 하단 아래 시작점
+  float moonScale = 1.0; // 달/태양 반경비 — 다크 채움과 동일한 크기까지 덮는다
+  float moonRise = -limbAboveSeam - 0.015; // 화면 하단 아래 시작점
   float moonOffset = mix(moonRise, 0.0, uLight);
   vec2 moonD = d - vec2(0.0, moonOffset);
   float moonDist = length(moonD);
@@ -227,7 +228,7 @@ void main() {
   float sunMask = 1.0 - smoothstep(-edgeAA, edgeAA, sunEdge);
   float moonMask = 1.0 - smoothstep(-edgeAA, edgeAA, moonEdge);
 
-  // 하늘 — 크림. 원반 주변에 항상 옅은 황혼 틴트를 깔고, 금환에 가까워질수록
+  // 하늘 — 크림. 원반 주변에 항상 옅은 황혼 틴트를 깔고, 완식에 가까워질수록
   // 하늘이 살짝 가라앉아 고리의 백열을 받쳐낸다(실제 금환일식도 하늘은 밝다).
   float sunOuter = max(sunEdge, 0.0);
   float sway = fbm(dir * 1.3 + vec2(uTime * 0.015, -uTime * 0.01));
@@ -235,27 +236,37 @@ void main() {
   sky = mix(sky, sky * vec3(0.968, 0.948, 0.918), exp(-sunOuter / 0.18));
   sky = mix(sky, sky * vec3(0.94, 0.925, 0.90), uLight * exp(-sunOuter / 0.12) * 0.8);
 
-  // 백열 광구 — 테이트 헤일로·미드 블룸·와이드 워시 3단 감쇠.
+  // 백열 광구 — 테이트 헤일로·미드 블룸·와이드 워시 3단 감쇠. rest에서도
+  // 태양 외곽선이 은은하게 빛을 발산한다.
   vec3 blaze = vec3(1.0, 0.96, 0.87);
   float halo = exp(-sunOuter / 0.009) * 0.62;
-  float bloom = exp(-sunOuter / 0.035) * (0.34 + 0.08 * sway);
-  float wash = exp(-sunOuter / 0.13) * 0.10;
-  sky = mix(sky, vec3(1.0, 0.90, 0.70), clamp(halo + bloom, 0.0, 1.0));
+  float bloom = exp(-sunOuter / 0.04) * (0.42 + 0.08 * sway);
+  float wash = exp(-sunOuter / 0.16) * 0.16;
+  float aura = exp(-sunOuter / 0.02) * 0.28;
+  sky = mix(sky, vec3(1.0, 0.90, 0.70), clamp(halo + bloom + aura, 0.0, 1.0));
   sky += blaze * wash * (1.0 - uLight * 0.35);
 
-  // 원반 — 백열 태양과 그 위에 물리는 에스프레소 달. 금환 안쪽 가장자리는
-  // 흰 것에 가깝게 달아오르고, 달 림으로는 그 빛이 살짝 감겨 들어온다.
-  vec3 moonCol = vec3(0.12, 0.09, 0.075);
-  moonCol += vec3(1.0, 0.80, 0.55) * exp(moonEdge / 0.012) * 0.22 * uLight;
+  // 원반 — 백열 태양과 그 위에 물리는 잉크빛 달. 접촉부는 서로를 밝게 태우고,
+  // 달 림으로는 그 빛이 살짝 감겨 들어온다. exp 인자는 화면 끝에서 달이 멀어질 때
+  // 오버픒로 INF→NaN(검은 코너)이 되지 않게 0 이하로 클램프한다 — 이 항은
+  // 달 원반 내부(moonEdge≤0)에서만 의미가 있다.
+  vec3 moonCol = vec3(0.115, 0.12, 0.145);
+  moonCol += vec3(1.0, 0.80, 0.55) * exp(min(moonEdge, 0.0) / 0.012) * 0.22 * uLight;
   vec3 disk = blaze * (0.975 + 0.025 * sway);
-  disk += vec3(0.05, 0.042, 0.025) * exp(-max(moonEdge, 0.0) / 0.022) * sunMask;
+  disk += vec3(0.07, 0.056, 0.032) * exp(-max(moonEdge, 0.0) / 0.02) * sunMask;
   disk *= 1.0 - smoothstep(-0.10, 0.0, sunEdge) * 0.05;
   vec3 eclipse = mix(sky, mix(disk, moonCol, moonMask), sunMask);
 
-  // 다이아몬드 링 — 초승달이 닳는 마지막 구간, 달 림 위로 스치는 빛 한 점.
-  float beadPhase = smoothstep(0.70, 0.92, uLight) * (1.0 - smoothstep(0.985, 1.0, uLight));
-  float bead = beadPhase * exp(-abs(moonEdge) / 0.007) * pow(max(moonDir.y, 0.0), 10.0);
-  eclipse += vec3(1.0, 0.97, 0.90) * bead * (sunMask * 0.9 + 0.25);
+  // 다이아몬드 빛 — 달이 물러 붙는 동안 접촉 림 위로 스치는 빛 한 점.
+  float beadPhase = smoothstep(0.55, 0.8, uLight) * (1.0 - smoothstep(0.93, 1.0, uLight));
+  float bead = beadPhase * exp(-abs(moonEdge) / 0.006) * pow(max(moonDir.y, 0.0), 8.0);
+  eclipse += vec3(1.0, 0.97, 0.90) * bead * (sunMask * 1.0 + 0.3);
+
+  // 빛 고리 — 달이 제자리에 착지하면 림을 두른다. 다크 모드의 금색 림선에
+  // 대응하는 라이트의 마무리.
+  float ringI = smoothstep(0.82, 1.0, uLight);
+  float ring = exp(-abs(sunEdge) / 0.008) * 1.1 + exp(-abs(sunEdge) / 0.028) * 0.5;
+  eclipse += vec3(1.0, 0.94, 0.82) * ring * ringI;
 
   col = mix(col, eclipse, uTheme);
 
@@ -265,8 +276,9 @@ void main() {
   col *= mix(vigFloor, 1.0, vig);
   col += (hash(frag + fract(uTime) * 100.0) - 0.5) / 255.0;
 
-  // 밤 페이드 — 런웨이 끝으로 갈수록 캔버스 하단부가 어둠에 잠긴다.
-  // 행성이 위로 떠나며 잘리는 면이 어둠 속에 묻혀, 평평한 섹션 배경과 이어진다.
+  // 밤 페이드 — 런웨이 끝으로 갈수록 캔버스 하단부가 배경에 잠긴다.
+  // 행성이 위로 떠나며 잘리는 면이 배경 속에 묻혀, 평평한 섹션 배경과 이어진다.
+  // 다크/라이트 동일 — 두 테마의 행성 거동은 다크 기준으로 동기화한다.
   vec3 pageBg = mix(vec3(0.102, 0.102, 0.11), vec3(0.965, 0.965, 0.968), uTheme);
   col = mix(col, pageBg, uNight * smoothstep(0.55, 1.0, 1.0 - vUv.y));
 
