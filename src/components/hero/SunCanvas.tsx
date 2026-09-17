@@ -13,12 +13,15 @@ const MAX_PIXEL_RATIO = 1.25;
 const MAX_PITCH = 1.2;
 /** 시간 기반 Y축 자전 속도(라디안/초). */
 const SPIN_RAD_PER_SEC = 0.03;
-/** 빛 채움 구간 — 런웨이의 이 범위에서 아래→위로 밝아져 0.8에 완등한다. */
+/** 빛 채움 구간 — 런웨이의 이 범위에서 아래→위로 밝아져 완등한다. */
 const LIGHT_START = 0.05;
 const LIGHT_END = 0.8;
+/** 밤 페이드 구간 — 런웨이 끝에서 캔버스 하단이 어둠에 잠겨 잘리는 면을 묻는다. */
+const NIGHT_START = 0.82;
+const NIGHT_END = 0.98;
 
 type SunCanvasProps = {
-  /** 0~1 히어로 런웨이 진행도. 빛 채움·구름각·렌더 게이트로 쓰인다. */
+  /** 0~1 히어로 런웨이 진행도. 빛 채움·밤 페이드·구름각·렌더 게이트로 쓰인다. */
   progress: number;
   className?: string;
 };
@@ -33,8 +36,12 @@ type SunContext = {
     uSpin: { value: number };
     uPitch: { value: number };
     uLight: { value: number };
+    uNight: { value: number };
+    uTheme: { value: number };
   };
   elapsed: number;
+  /** 0(다크)~1(라이트)로 보간되는 현재 테마 값. */
+  theme: number;
   visible: boolean;
 };
 
@@ -66,6 +73,8 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
       uSpin: { value: 0 },
       uPitch: { value: 0 },
       uLight: { value: 0 },
+      uNight: { value: 0 },
+      uTheme: { value: 0 },
     };
     const material = new THREE.ShaderMaterial({
       vertexShader: SUN_VERTEX,
@@ -81,6 +90,7 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
       camera,
       uniforms,
       elapsed: 0,
+      theme: document.documentElement.dataset.theme === "light" ? 1 : 0,
       visible: true,
     };
     ctxRef.current = ctx;
@@ -89,10 +99,8 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
       const { clientWidth, clientHeight } = canvas;
       if (clientWidth === 0 || clientHeight === 0) return;
       renderer.setSize(clientWidth, clientHeight, false);
-      uniforms.uResolution.value.set(
-        clientWidth * renderer.getPixelRatio(),
-        clientHeight * renderer.getPixelRatio(),
-      );
+      const dpr = renderer.getPixelRatio();
+      uniforms.uResolution.value.set(clientWidth * dpr, clientHeight * dpr);
     };
     resize();
     const resizeObserver = new ResizeObserver(resize);
@@ -118,16 +126,21 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
 
   useAnimationFrame((_, deltaMs) => {
     const ctx = ctxRef.current;
-    if (!ctx) return;
-    if (!ctx.visible || document.hidden) return;
+    if (!ctx || !ctx.visible || document.hidden) return;
     const p = progressRef.current;
-    // 동작 감소 설정에서는 시간 기반 끓음·구름을 멈춘다(정적 프레임 유지).
+    // 동작 감소 설정에서는 시간 기반 끓음·자전을 멈춘다(정적 프레임 유지).
     const reduced = reducedMotion ?? false;
     if (!reduced) ctx.elapsed += deltaMs / 1000;
+    // 테마 전환은 색 크로스페이드라 reduced-motion에서도 부드럽게 따라가게 한다.
+    const themeTarget =
+      document.documentElement.dataset.theme === "light" ? 1 : 0;
+    ctx.theme += (themeTarget - ctx.theme) * Math.min(1, (deltaMs / 1000) * 7);
     ctx.uniforms.uTime.value = ctx.elapsed;
     ctx.uniforms.uSpin.value = reduced ? 0 : ctx.elapsed * SPIN_RAD_PER_SEC;
     ctx.uniforms.uPitch.value = reduced ? 0 : p * MAX_PITCH;
     ctx.uniforms.uLight.value = smoothstep(LIGHT_START, LIGHT_END, p);
+    ctx.uniforms.uNight.value = smoothstep(NIGHT_START, NIGHT_END, p);
+    ctx.uniforms.uTheme.value = ctx.theme;
     ctx.renderer.render(ctx.scene, ctx.camera);
   });
 

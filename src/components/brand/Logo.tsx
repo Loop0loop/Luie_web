@@ -1,5 +1,4 @@
 import { cn } from "../../lib/cn";
-import { FleurDeLis } from "./FleurDeLis";
 
 type LogoProps = {
   className?: string;
@@ -15,7 +14,7 @@ export function Logo({ className }: LogoProps) {
         className,
       )}
     >
-      <FleurDeLis className="size-5 text-accent" />
+      <img src="/luie.png" alt="" className="size-7" />
       <span className="text-lg font-semibold tracking-tight">Luie</span>
     </a>
   );

@@ -23,6 +23,19 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // 첫 페인트 전에 저장된 테마(없으면 시스템 설정)를 적용해 플래시를 막는다.
+      (function () {
+        var saved = localStorage.getItem("luie-theme");
+        var theme =
+          saved === "light" || saved === "dark"
+            ? saved
+            : matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark";
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

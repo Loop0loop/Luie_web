@@ -6,24 +6,21 @@ type SectionStubProps = {
   title: string;
   hint?: string;
   className?: string;
-  /** 상단 구분선. 행성 이어짐 위에 선이 그여지는 섹션은 false로 끈다. */
-  divider?: boolean;
 };
 
 /**
- * 앞으로 채워질 섹션의 자리 표시.
+ * 앞으로 채워질 섹션의 자리 표시. 한 섹션이 뷰포트 한 장(h-screen)을 차지한다.
  * 앵커 내비게이션과 헤더 동작 검증용이며, 각 섹션 구현 시 교체된다.
  */
-export function SectionStub({ id, number, title, hint, className, divider = true }: SectionStubProps) {
+export function SectionStub({ id, number, title, hint, className }: SectionStubProps) {
   return (
     <section
       id={id}
       className={cn(
-        "relative flex min-h-[85vh] items-center justify-center px-6",
+        "relative flex h-screen items-center justify-center px-6",
         className,
       )}
     >
-      {divider && <div className="absolute inset-x-6 top-0 h-px bg-line" />}
       <div className="text-center">
         <p className="text-sm font-medium tracking-[0.2em] text-accent-soft">{number}</p>
         <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground">

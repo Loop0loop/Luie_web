@@ -1,6 +1,7 @@
 import { cn } from "../../lib/cn";
 import { Logo } from "../brand/Logo";
 import { Button } from "../ui/Button";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 const NAV_LINKS = [
   { href: "#features", label: "기능" },
@@ -10,24 +11,32 @@ const NAV_LINKS = [
 ] as const;
 
 type HeaderBarProps = {
-  /** 플로팅 상태에서는 링크 간격을 줄여 필 안에 맞춘다. */
+  /** 플로팅 상태에서는 필 안에 맞춰 한 덩어리로 모인다. */
   floating?: boolean;
 };
 
 /**
- * 헤더의 실제 내용(로고 · 네비게이션 · CTA).
- * 부모가 높이를 결정하므로 이 컴포넌트는 가로 배치만 담당한다.
- * 최상단 바에서는 링크 사이를 넓게, 플로팅 필에서는 좁게 쓴다.
+ * 헤더의 실제 내용(로고 · 네비게이션 · 테마 토글 · CTA).
+ * 전체 바 상태에서는 콘텐츠가 중앙 70% 안에만 존재한다 — 외곽 30%는
+ * safe-area로 어떤 요소도 들어가지 못하는 여백이다. 플로팅 필에서는
+ * 간격을 좁혀 한 덩어리로 중앙에 모인다.
  */
 export function HeaderBar({ floating = false }: HeaderBarProps) {
   return (
-    <div className="flex h-full items-center justify-center gap-6 px-6">
+    <div
+      className={cn(
+        "flex h-full items-center",
+        floating
+          ? "justify-center gap-6 px-6"
+          : "mx-auto w-[max(70%,340px)] justify-between px-[max(0.5rem,env(safe-area-inset-left))]",
+      )}
+    >
       <Logo />
       <nav
         aria-label="주요 메뉴"
         className={cn(
           "hidden items-center text-sm text-muted md:flex",
-          floating ? "gap-8" : "gap-16",
+          floating ? "gap-8" : "gap-12 xl:gap-16",
         )}
       >
         {NAV_LINKS.map((link) => (
@@ -40,9 +49,12 @@ export function HeaderBar({ floating = false }: HeaderBarProps) {
           </a>
         ))}
       </nav>
-      <Button size="sm" href="#download">
-        다운로드
-      </Button>
+      <div className="flex items-center gap-1.5">
+        <ThemeToggle />
+        <Button size="sm" href="#download">
+          다운로드
+        </Button>
+      </div>
     </div>
   );
 }

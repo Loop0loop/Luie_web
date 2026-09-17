@@ -1,10 +1,11 @@
 /**
- * 히어로 태양 셰이더 v2 — 절제된 프리미엄 톤.
+ * 히어로 태양 셰이더 v4 — 화면 폭보다 가로로 살짝 큰 타원의 행성.
  *
- * macOS 야간 지구 배경화면의 구도(화면 아랫절을 덮는 거대한 천체 + 위쪽 검은
- * 우주 + 림 빛)를 유지하되, v1의 고채도 용암 룩을 걷어냈다.
- * - 광구: 부드러운 심홍 방사형 그라데이션 바탕 + 도메인 워핑한 미세 입자(±10%)
- * - 필라멘트: 비등방 노이즈로 표면에 결을 만든다
+ * 거대 행성의 완만한 곡률 + 림 금빛 + 코로나로 macOS 야간 지구 배경화면 톤을 낸다.
+ * 표면은 3D 구면 노이즈로 샘플링한다(경도 atan 이음새 크랙 제거). 런웨이 끝에는
+ * 캔버스 하단이 밤에 잠겨 섹션 배경과 이어지고, uTheme으로 다크/라이트 우주를 전환한다.
+ * - 광구: 심홍 방사형 그라데이션 + 도메인 워핑 미세 입자
+ * - 필라멘트: 완만한 비등방 노이즈 결
  * - 림: 가장자리 다어케닝 후 얇은 금색 대기선
  * - 코로나: 금색, 넓고 낮은 강도로 천천히 숨쉬기
  */
@@ -20,11 +21,13 @@ void main() {
 export const SUN_FRAGMENT = /* glsl */ `
 varying vec2 vUv;
 
-uniform vec2 uResolution;
+uniform vec2 uResolution; // 캔버스 픽셀 크기
 uniform float uTime;
 uniform float uSpin;
 uniform float uPitch;
 uniform float uLight; // 0=아래쪽만 밝음 → 1=림까지 전부 밝음
+uniform float uNight; // 0=밤 페이드 없음 → 1=캔버스 하단부가 어둠에 잠김
+uniform float uTheme; // 0=다크 우주 → 1=라이트 우주(JS가 부드럽게 보간)
 
 float hash(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -56,34 +59,68 @@ float fbm(vec2 p) {
   return v;
 }
 
+float hash3(vec3 p) {
+  p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3));
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+
+float noise3(vec3 x) {
+  vec3 i = floor(x);
+  vec3 f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(mix(hash3(i), hash3(i + vec3(1.0, 0.0, 0.0)), f.x),
+        mix(hash3(i + vec3(0.0, 1.0, 0.0)), hash3(i + vec3(1.0, 1.0, 0.0)), f.x), f.y),
+    mix(mix(hash3(i + vec3(0.0, 0.0, 1.0)), hash3(i + vec3(1.0, 0.0, 1.0)), f.x),
+        mix(hash3(i + vec3(0.0, 1.0, 1.0)), hash3(i + vec3(1.0, 1.0, 1.0)), f.x), f.y),
+    f.z);
+}
+
+float fbm3(vec3 p) {
+  float v = 0.0;
+  float a = 0.5;
+  for (int i = 0; i < 4; i++) {
+    v += a * noise3(p);
+    p = p * 2.03 + vec3(11.5, 7.3, 4.9);
+    a *= 0.55;
+  }
+  return v;
+}
+
 void main() {
   vec2 frag = vUv * uResolution;
   vec2 p = (frag - 0.5 * uResolution) / uResolution.y;
 
-  // 지평선 59% 지점. 넓게 휘어진 거대한 구체만 보이게 화면 아래로 물린다.
-  vec2 center = vec2(0.0, -1.66);
-  float R = 1.48;
+  // 거대 행성의 타원 — 세로 반경 R(뷰포트 높이 정규화). 가로는 접합선(캔버스 하단)에서
+  // 좌우 끝까지 꽉 차는 스트레치를 종횡비에서 역산해, 하단 코너의 공백 없이 꽉 찬다.
+  float limbAboveSeam = 0.36;
+  float R = 0.51 * (uResolution.x / uResolution.y);
+  vec2 center = vec2(0.0, limbAboveSeam - 0.5 - R);
   vec2 d = p - center;
+  float chordHalf = sqrt(max(R * R - (R - limbAboveSeam) * (R - limbAboveSeam), 1e-4));
+  float stretch = max(0.56 * (uResolution.x / uResolution.y) / chordHalf, 1.15);
+  d.x /= stretch;
   float dist = length(d);
   float t = dist / R; // 0 중심 → 1 림
 
-  // 뉴트럴 심우주
-  vec3 col = vec3(0.043, 0.043, 0.047);
+  // 심우주 — 다크는 뉴트럴 블랙, 라이트는 종이빛
+  vec3 col = mix(vec3(0.043, 0.043, 0.047), vec3(0.945, 0.945, 0.952), uTheme);
 
   float aboveLimb = max(dist - R, 0.0);
   float glowMask = exp(-aboveLimb * 2.4);
 
-  // 별 — 뉴트럴 화이트, 코로나에서 멀어질수록 선명
+  // 별 — 뉴트럴 화이트, 코로나에서 멀어질수록 선명. 라이트에서는 거의 숨긴다.
   vec2 cell = floor(frag / 2.5);
   float h = hash(cell);
   float twinkle = 0.55 + 0.45 * sin(uTime * (0.4 + h * 0.4) + h * 60.0);
   float star = smoothstep(0.9978, 0.9995, h) * twinkle * (1.0 - smoothstep(0.0, 0.3, glowMask));
-  col += vec3(0.92) * star * 0.5;
+  col += vec3(0.92) * star * 0.5 * (1.0 - uTheme * 0.85);
 
-  // 빛 채움 — 경계를 행성 중심 동심원 반경(rLine)으로 정의해 빛이 림과 같은
-  // 곡률의 호를 그리며 아래에서 림까지 올라온다. 직선 경계는 원반 밖까지 퍼진다.
-  float yLine = mix(-0.44, -0.08, uLight);
-  float rLine = yLine - center.y;
+  // 빛 채움 — 중심→접합선 거리(seamDist)에서 시작해 림 바깥까지 완등하는
+  // 동심원 호. uLight=0에서도 접합선 아래 슬리버가 살짝 밝다.
+  float seamDist = R - limbAboveSeam;
+  float rLine = mix(seamDist + 0.08, R + 0.06, uLight);
 
   float ang = atan(d.y, d.x);
   vec2 dir = vec2(cos(ang), sin(ang));
@@ -91,12 +128,21 @@ void main() {
   // 코로나는 림 바깥에만 존재한다(원반 내부는 순수한 광구 색을 유지).
   float outside = smoothstep(R - 0.004, R, dist);
 
-  // 코로나 — 금색, 좁고 낮게. 저주파 노이즈로 천천히 숨쉰다.
+  // 코로나 — 금색, 저주파 노이즈로 천천히 숨쉰다.
+  // 다크에서는 가산, 라이트(일식)에서는 더 밝고 넓게 번지는 주인공.
   float breath = fbm(dir * 1.8 + vec2(uTime * 0.02, -uTime * 0.012));
+  float wideDecay = mix(2.2, 1.25, uTheme);
   float coronaTight = exp(-aboveLimb * 9.0) * (0.30 + 0.22 * breath);
-  float coronaWide = exp(-aboveLimb * 2.2) * (0.05 + 0.035 * breath);
-  col += vec3(1.0, 0.76, 0.45) * coronaTight * outside;
-  col += vec3(0.80, 0.55, 0.33) * coronaWide * outside;
+  float coronaWide = exp(-aboveLimb * wideDecay) * (0.05 + 0.035 * breath);
+  vec3 coronaCol = mix(
+    vec3(0.80, 0.55, 0.33),
+    vec3(1.0, 0.82, 0.55),
+    clamp(coronaTight * 2.2, 0.0, 1.0)
+  );
+  float coronaS = clamp(coronaTight + coronaWide * 0.8, 0.0, 1.0) * outside;
+  // 라이트에서는 이클립스가 진행되며 코로나가 살아난다(초반엔 잔잔한 온기).
+  float coronaStrength = mix(1.0, mix(0.35, 2.2, uLight), uTheme);
+  col = mix(col, coronaCol, clamp(coronaS * coronaStrength, 0.0, 1.0));
 
   // 광구 — 구면 좌표로 샘플링. 빛이 닿은 영역만 홍염으로 살아나고
   // 나머지는 어두운 실루엣(자전 전 표면)으로 남는다.
@@ -112,15 +158,13 @@ void main() {
     float sPitch = sin(uPitch);
     vec3 nr = vec3(nSpin.x, nSpin.y * cPitch - nSpin.z * sPitch, nSpin.y * sPitch + nSpin.z * cPitch);
 
-    float lon = atan(nr.z, nr.x);
-    float lat = asin(clamp(nr.y, -1.0, 1.0));
-    vec2 sp = vec2(lon * 1.8, lat * 2.4);
-
-    // 도메인 워핑한 미세 입자 — 절제된 질감(이전 버전 수준)
-    vec2 drift = vec2(uTime * 0.012, uTime * 0.005);
-    float warp = fbm(sp * 2.0 + drift);
-    float grain = fbm(sp * 4.2 + warp * 1.4 - drift * 1.6);
-    float filament = fbm(vec2(sp.x * 1.1, sp.y * 3.8) + warp);
+    // 3D 구면 샘플링 — 경도 atan의 ±π 이음새에서 생기는 크랙이 없다.
+    vec3 sp3 = nr * 2.6;
+    vec3 drift = vec3(uTime * 0.012, uTime * 0.005, -uTime * 0.008);
+    float warp = fbm3(sp3 * 1.4 + drift);
+    float grain = fbm3(sp3 * 3.2 + warp * 1.2 - drift * 1.6);
+    // 완만한 비등방 필라멘트 — 가늘고 긴 streak가 크랙처럼 읽히지 않게 완화했다.
+    float filament = fbm3(vec3(sp3.x * 0.7, sp3.y * 1.9, sp3.z * 0.7) + warp * 0.8);
 
     // 어두운 실루엣 — 빛이 닿기 전 표면
     vec3 dark = vec3(0.075, 0.028, 0.018);
@@ -134,38 +178,56 @@ void main() {
     vec3 litBody = mix(core, mid, smoothstep(0.10, 0.50, t));
     litBody = mix(litBody, edge, smoothstep(0.60, 0.98, t));
     litBody *= 1.0 + (grain - 0.5) * 0.16;
-    litBody *= 1.0 + (filament - 0.5) * 0.08;
+    litBody *= 1.0 + (filament - 0.5) * 0.10;
 
-    // 드문 태양점
-    float spots = fbm(sp * 1.0 + 41.0);
-    litBody *= 1.0 - smoothstep(0.40, 0.28, spots) * 0.35;
+    // 태양점 — 노이즈 등고선의 얇은 밴드(크랙처럼 보임)가 아니라 부드러운 얼룩으로.
+    float spots = fbm3(sp3 * 0.9 + 41.0);
+    litBody *= 1.0 - smoothstep(0.52, 0.70, spots) * 0.38;
 
     float lit = 1.0 - smoothstep(rLine - 0.05, rLine + 0.05, dist);
     vec3 body = mix(dark, litBody, lit);
 
-    // 림 다어케닝 후 얇은 금색 대기선과 그 아래 은은한 온기 (항상 켜져 있다)
+    // 림 다어케닝과 그 아래 은은한 온기 (항상 켜져 있다)
     body *= 1.0 - smoothstep(0.80, 1.0, t) * 0.30;
     body += vec3(0.90, 0.55, 0.30) * smoothstep(0.90, 1.0, t) * 0.10;
-    float limbLine = smoothstep(0.984, 0.996, t) * (1.0 - smoothstep(0.999, 1.0, t));
-    body += vec3(1.0, 0.78, 0.52) * limbLine * 0.55;
 
-    col += body;
+    // 라이트 테마 — 일식이 차오르는 구도. uLight(스크롤)가 진행될수록 어두운
+    // 달 원반이 중심에서 자라나 밝은 태양을 덮고, 완식 때 링과 코로나가 완성된다.
+    vec3 sunDisk = vec3(1.0, 0.86, 0.58)
+      * ((1.0 + (1.0 - t) * 0.35) * (1.0 + (grain - 0.5) * 0.22 + (filament - 0.5) * 0.10));
+    float rMoon = R * clamp(uLight * 1.08, 0.0, 1.0);
+    float moon = 1.0 - smoothstep(rMoon - 0.03, rMoon + 0.03, dist);
+    vec3 eclipseDisk = vec3(0.055, 0.05, 0.055) * (1.0 + (grain - 0.5) * 0.15);
+    vec3 bodyLight = mix(sunDisk, eclipseDisk, moon);
+    // 다이아몬드 링 — 달의 가장자리에 얇은 빛이 스친다.
+    bodyLight += vec3(1.0, 0.92, 0.70)
+      * exp(-abs(dist - rMoon) * 60.0) * smoothstep(0.02, 0.25, uLight) * 0.35;
+    body = mix(body, bodyLight, uTheme);
+
+    float limbLine = smoothstep(0.980, 0.998, t) * (1.0 - smoothstep(0.996, 1.0, t));
+    body += vec3(1.0, 0.84, 0.58) * limbLine
+      * mix(0.55, mix(0.12, 0.95, uLight), uTheme);
+
+    // 다크는 우주색 위 가산, 라이트는 행성색으로 대체(밝은 배경 위 클리핑 방지).
+    col = mix(col + body, body, uTheme);
   }
 
   // 채움 경계선 — 빛이 올라가는 동안 경계에 금빛이 따라붙는다.
   // 원반 내부로만 클리핑해서 경계선이 행성 밖 우주 배경까지 가로지르지 않는다.
   float midFill = 1.0 - smoothstep(0.30, 0.70, abs(uLight * 2.0 - 1.0));
   float terminator = exp(-abs(dist - rLine) * 22.0) * midFill * (1.0 - outside);
-  col += vec3(1.0, 0.70, 0.40) * terminator * 0.30;
+  col = mix(col, vec3(1.0, 0.70, 0.40), terminator * 0.30 * mix(1.0, 0.25, uTheme));
 
-  // 비네트(뉴트럴) + 디더링(밴딩 방지)
+  // 비네트(테마별 강도) + 디더링(밴딩 방지)
+  float vigFloor = mix(0.62, 0.88, uTheme);
   float vig = smoothstep(1.4, 0.4, length(p * vec2(0.9, 1.15)));
-  col *= mix(0.62, 1.0, vig);
+  col *= mix(vigFloor, 1.0, vig);
   col += (hash(frag + fract(uTime) * 100.0) - 0.5) / 255.0;
 
-  // 캔버스 하단 시임 페이드는 없다 — 행성이 잘린 채로 끝난다. 다음 섹션 상단의
-  // PlanetNightfall이 같은 톤의 몸체로 이어받아 어두워지므로 절단면은 노출되지 않고,
-  // 웜톤 그대로 이어진다.
+  // 밤 페이드 — 런웨이 끝으로 갈수록 캔버스 하단부가 어둠에 잠긴다.
+  // 행성이 위로 떠나며 잘리는 면이 어둠 속에 묻혀, 평평한 섹션 배경과 이어진다.
+  vec3 pageBg = mix(vec3(0.102, 0.102, 0.11), vec3(0.965, 0.965, 0.968), uTheme);
+  col = mix(col, pageBg, uNight * smoothstep(0.55, 1.0, 1.0 - vUv.y));
 
   gl_FragColor = vec4(col, 1.0);
 }

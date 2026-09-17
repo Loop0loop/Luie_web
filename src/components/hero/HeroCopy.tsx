@@ -32,7 +32,7 @@ export function HeroCopy() {
       variants={CONTAINER_VARIANTS}
       initial={reducedMotion ? "show" : "hidden"}
       animate="show"
-      className="flex h-full flex-col items-center justify-center px-6 pb-[18vh] text-center"
+      className="flex h-full flex-col items-center justify-center px-6 pb-[22vh] text-center"
     >
       <motion.h1
         variants={ITEM_VARIANTS}
@@ -41,10 +41,7 @@ export function HeroCopy() {
         이야기를 시작해보세요
       </motion.h1>
 
-      <motion.p
-        variants={ITEM_VARIANTS}
-        className="mt-5 flex h-8 items-center text-lg text-muted"
-      >
+      <motion.p variants={ITEM_VARIANTS} className="mt-5 flex h-8 items-center text-lg text-muted">
         <TypingText phrases={PHRASES} />
       </motion.p>
 
