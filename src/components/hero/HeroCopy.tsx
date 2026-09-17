@@ -4,6 +4,8 @@ import { DownloadIcon } from "../ui/icons";
 import { TypingText } from "./TypingText";
 
 const TYPING_PHRASES = ["새로운 집필을 시작해보세요."] as const;
+// 렌더마다 새 배열이 만들어지면 TypingText 이펙트가 재시작하므로 참조를 고정한다.
+const PHRASES: string[] = [...TYPING_PHRASES];
 
 /** 페이지 진입 시 위→아래 순차 등장. */
 const CONTAINER_VARIANTS = {
@@ -32,14 +34,6 @@ export function HeroCopy() {
       animate="show"
       className="flex h-full flex-col items-center justify-center px-6 pb-[18vh] text-center"
     >
-      <motion.div variants={ITEM_VARIANTS}>
-        <img
-          src="/luie.png"
-          alt=""
-          className="mb-7 size-16 rounded-2xl shadow-[0_12px_36px_-10px_rgba(0,0,0,0.65)]"
-        />
-      </motion.div>
-
       <motion.h1
         variants={ITEM_VARIANTS}
         className="text-[clamp(2.5rem,6vw,4.75rem)] leading-[1.1] font-bold tracking-[-0.03em] text-foreground"
@@ -51,7 +45,7 @@ export function HeroCopy() {
         variants={ITEM_VARIANTS}
         className="mt-5 flex h-8 items-center text-lg text-muted"
       >
-        <TypingText phrases={[...TYPING_PHRASES]} />
+        <TypingText phrases={PHRASES} />
       </motion.p>
 
       <motion.p variants={ITEM_VARIANTS} className="mt-3 text-sm text-subtle">

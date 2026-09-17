@@ -24,6 +24,7 @@ uniform vec2 uResolution;
 uniform float uTime;
 uniform float uSpin;
 uniform float uPitch;
+uniform float uLight; // 0=아래쪽만 밝음 → 1=림까지 전부 밝음
 
 float hash(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -79,6 +80,11 @@ void main() {
   float star = smoothstep(0.9978, 0.9995, h) * twinkle * (1.0 - smoothstep(0.0, 0.3, glowMask));
   col += vec3(0.92) * star * 0.5;
 
+  // 빛 채움 — 경계를 행성 중심 동심원 반경(rLine)으로 정의해 빛이 림과 같은
+  // 곡률의 호를 그리며 아래에서 림까지 올라온다. 직선 경계는 원반 밖까지 퍼진다.
+  float yLine = mix(-0.44, -0.08, uLight);
+  float rLine = yLine - center.y;
+
   float ang = atan(d.y, d.x);
   vec2 dir = vec2(cos(ang), sin(ang));
 
@@ -92,44 +98,52 @@ void main() {
   col += vec3(1.0, 0.76, 0.45) * coronaTight * outside;
   col += vec3(0.80, 0.55, 0.33) * coronaWide * outside;
 
-  // 광구 — 부드러운 방사형 그라데이션 + 미세 입자.
-  // 스크롤이 X축 구름(표면이 아래에서 위로 흐름), 시간이 Y축 자전을 만든다.
+  // 광구 — 구면 좌표로 샘플링. 빛이 닿은 영역만 홍염으로 살아나고
+  // 나머지는 어두운 실루엣(자전 전 표면)으로 남는다.
   if (dist < R) {
     float z = sqrt(R * R - dist * dist);
     vec3 n = vec3(d.x, d.y, z) / R;
 
-    float ca = cos(uSpin);
-    float sa = sin(uSpin);
-    vec3 nSpin = vec3(n.x * ca + n.z * sa, n.y, -n.x * sa + n.z * ca);
+    float cSpin = cos(uSpin);
+    float sSpin = sin(uSpin);
+    vec3 nSpin = vec3(n.x * cSpin + n.z * sSpin, n.y, -n.x * sSpin + n.z * cSpin);
 
-    float cp = cos(uPitch);
-    float sp = sin(uPitch);
-    vec3 nr = vec3(nSpin.x, nSpin.y * cp - nSpin.z * sp, nSpin.y * sp + nSpin.z * cp);
+    float cPitch = cos(uPitch);
+    float sPitch = sin(uPitch);
+    vec3 nr = vec3(nSpin.x, nSpin.y * cPitch - nSpin.z * sPitch, nSpin.y * sPitch + nSpin.z * cPitch);
 
     float lon = atan(nr.z, nr.x);
     float lat = asin(clamp(nr.y, -1.0, 1.0));
     vec2 sp = vec2(lon * 1.8, lat * 2.4);
 
-    // 도메인 워핑한 입자 — 낮은 진폭으로 질감만 만든다
+    // 도메인 워핑한 미세 입자 — 절제된 질감(이전 버전 수준)
     vec2 drift = vec2(uTime * 0.012, uTime * 0.005);
     float warp = fbm(sp * 2.0 + drift);
     float grain = fbm(sp * 4.2 + warp * 1.4 - drift * 1.6);
     float filament = fbm(vec2(sp.x * 1.1, sp.y * 3.8) + warp);
 
-    vec3 core = vec3(0.155, 0.052, 0.030);
-    vec3 mid = vec3(0.110, 0.038, 0.024);
-    vec3 edge = vec3(0.055, 0.024, 0.018);
+    // 어두운 실루엣 — 빛이 닿기 전 표면
+    vec3 dark = vec3(0.075, 0.028, 0.018);
 
-    vec3 body = mix(core, mid, smoothstep(0.15, 0.62, t));
-    body = mix(body, edge, smoothstep(0.55, 1.0, t));
-    body *= 1.0 + (grain - 0.5) * 0.14;
-    body *= 1.0 + (filament - 0.5) * 0.08;
+    // 빛이 닿은 표면 — 홍염 그라데이션. 보이는 부분이 림 근처(t≈1)에 몰려 있으므로
+    // edge 톤도 충분히 밝게 유지해야 '채워짐'이 읽힌다.
+    vec3 core = vec3(0.34, 0.12, 0.05);
+    vec3 mid = vec3(0.26, 0.09, 0.036);
+    vec3 edge = vec3(0.15, 0.058, 0.028);
+
+    vec3 litBody = mix(core, mid, smoothstep(0.10, 0.50, t));
+    litBody = mix(litBody, edge, smoothstep(0.60, 0.98, t));
+    litBody *= 1.0 + (grain - 0.5) * 0.16;
+    litBody *= 1.0 + (filament - 0.5) * 0.08;
 
     // 드문 태양점
     float spots = fbm(sp * 1.0 + 41.0);
-    body *= 1.0 - smoothstep(0.40, 0.28, spots) * 0.30;
+    litBody *= 1.0 - smoothstep(0.40, 0.28, spots) * 0.35;
 
-    // 림 다어케닝 후 얇은 금색 대기선과 그 아래 은은한 온기
+    float lit = 1.0 - smoothstep(rLine - 0.05, rLine + 0.05, dist);
+    vec3 body = mix(dark, litBody, lit);
+
+    // 림 다어케닝 후 얇은 금색 대기선과 그 아래 은은한 온기 (항상 켜져 있다)
     body *= 1.0 - smoothstep(0.80, 1.0, t) * 0.30;
     body += vec3(0.90, 0.55, 0.30) * smoothstep(0.90, 1.0, t) * 0.10;
     float limbLine = smoothstep(0.984, 0.996, t) * (1.0 - smoothstep(0.999, 1.0, t));
@@ -138,10 +152,20 @@ void main() {
     col += body;
   }
 
+  // 채움 경계선 — 빛이 올라가는 동안 경계에 금빛이 따라붙는다.
+  // 원반 내부로만 클리핑해서 경계선이 행성 밖 우주 배경까지 가로지르지 않는다.
+  float midFill = 1.0 - smoothstep(0.30, 0.70, abs(uLight * 2.0 - 1.0));
+  float terminator = exp(-abs(dist - rLine) * 22.0) * midFill * (1.0 - outside);
+  col += vec3(1.0, 0.70, 0.40) * terminator * 0.30;
+
   // 비네트(뉴트럴) + 디더링(밴딩 방지)
   float vig = smoothstep(1.4, 0.4, length(p * vec2(0.9, 1.15)));
   col *= mix(0.62, 1.0, vig);
   col += (hash(frag + fract(uTime) * 100.0) - 0.5) / 255.0;
+
+  // 캔버스 하단 시임 페이드는 없다 — 행성이 잘린 채로 끝난다. 다음 섹션 상단의
+  // PlanetNightfall이 같은 톤의 몸체로 이어받아 어두워지므로 절단면은 노출되지 않고,
+  // 웜톤 그대로 이어진다.
 
   gl_FragColor = vec4(col, 1.0);
 }
