@@ -1,14 +1,15 @@
 {
   "name": "luie-web",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "packageManager": "pnpm@12.4.1",
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
@@ -16,6 +17,20 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@12.4.1",
-  "type": "module"
+  "dependencies": {
+    "motion": "^13.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/three": "^0.186.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
 }

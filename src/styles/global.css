@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+/*
+ * Luie 랜딩 디자인 토큰 — shadcn 패턴의 시맨틱 변수.
+ * 다크가 기본이며 값은 Luie 앱의 다크 테마 축을 따른다
+ * (app #1a1a1c / sidebar #212123 / panel #28282b, text #d7d7da).
+ * 강조색은 소량만 쓰는 로열 골드. 라이트 테마는 [data-theme="light"] 슬롯으로 확장.
+ */
+:root {
+  --background: #1a1a1c;
+  --surface: #212123;
+  --elevated: #28282b;
+
+  --foreground: #f4f4f5;
+  --text-body: #d7d7da;
+  --text-muted: #989aa2;
+  --text-subtle: #6c6e77;
+
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  --accent: #d9a441;
+  --accent-strong: #e6b659;
+  --accent-soft: #a9834a;
+  --on-accent: #201a10;
+
+  --shadow-panel: 0 12px 40px -12px rgba(0, 0, 0, 0.5);
+  --shadow-cta: 0 6px 24px -6px rgba(217, 164, 65, 0.35);
+}
+
+/* TODO: 라이트 테마 — 배경/텍스트/선만 교체하는 수준으로 확장 예정 */
+[data-theme="light"] {
+}
+
+@theme inline {
+  --font-sans:
+    "Inter", "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+
+  --color-foreground: var(--foreground);
+  --color-body: var(--text-body);
+  --color-muted: var(--text-muted);
+  --color-subtle: var(--text-subtle);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+
+  --shadow-panel: var(--shadow-panel);
+  --shadow-cta: var(--shadow-cta);
+
+  --animate-caret: caret-blink 1.1s step-end infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--foreground);
+}
