@@ -1,3 +1,5 @@
+import { SUN_PALETTE_GLSL, SUN_PALETTE_ORDER } from "./sunPalette";
+
 /**
  * 히어로 태양 셰이더 v4 — 화면 폭보다 가로로 살짝 큰 타원의 행성.
  *
@@ -11,6 +13,9 @@
  * - 라이트: 금환일식(annular eclipse) 진행형 — 태양과 같은 크기의 달이 아래에서
  *   떠올라 태양을 물어 덮고(다크 채움과 동일 범위), 착지 시 림에 백열 빛 고리.
  *   무광 달 실루엣 + 3단 블룸, 하드 외곽선 없음.
+ *
+ * 색은 전부 uPal 유니폼(sunPalette.ts)에서 받는다. PAL_* 인덱스 상수는 팔레트
+ * 파일의 키 순서에서 코드 생성해 이 문자열 앞에 붙인다.
  */
 export const SUN_VERTEX = /* glsl */ `
 varying vec2 vUv;
@@ -31,6 +36,9 @@ uniform float uPitch;
 uniform float uLight; // 0=아래쪽만 밝음 → 1=림까지 전부 밝음
 uniform float uNight; // 0=밤 페이드 없음 → 1=캔버스 하단부가 어둠에 잠김
 uniform float uTheme; // 0=다크 우주 → 1=라이트 우주(JS가 부드럽게 보간)
+uniform vec3 uPal[${SUN_PALETTE_ORDER.length}]; // 팔레트 — sunPalette.ts 참조
+
+${SUN_PALETTE_GLSL}
 
 float hash(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -108,7 +116,7 @@ void main() {
   float t = dist / R; // 0 중심 → 1 림
 
   // 심우주 — 다크는 뉴트럴 블랙, 라이트는 종이빛
-  vec3 col = mix(vec3(0.043, 0.043, 0.047), vec3(0.945, 0.945, 0.952), uTheme);
+  vec3 col = mix(uPal[PAL_SPACE_DARK], uPal[PAL_SPACE_LIGHT], uTheme);
 
   float aboveLimb = max(dist - R, 0.0);
   float glowMask = exp(-aboveLimb * 2.4);
@@ -118,7 +126,7 @@ void main() {
   float h = hash(cell);
   float twinkle = 0.55 + 0.45 * sin(uTime * (0.4 + h * 0.4) + h * 60.0);
   float star = smoothstep(0.9978, 0.9995, h) * twinkle * (1.0 - smoothstep(0.0, 0.3, glowMask));
-  col += vec3(0.92) * star * 0.5 * (1.0 - uTheme * 0.85);
+  col += uPal[PAL_STAR] * star * 0.5 * (1.0 - uTheme * 0.85);
 
   // 빛 채움 — 중심→접합선 거리(seamDist)에서 시작해 림 바깥까지 완등하는
   // 동심원 호. uLight=0에서도 접합선 아래 슬리버가 살짝 밝다.
@@ -138,8 +146,8 @@ void main() {
   float coronaTight = exp(-aboveLimb * 9.0) * (0.30 + 0.22 * breath);
   float coronaWide = exp(-aboveLimb * wideDecay) * (0.05 + 0.035 * breath);
   vec3 coronaCol = mix(
-    vec3(0.80, 0.55, 0.33),
-    vec3(1.0, 0.82, 0.55),
+    uPal[PAL_CORONA_LO],
+    uPal[PAL_CORONA_HI],
     clamp(coronaTight * 2.2, 0.0, 1.0)
   );
   float coronaS = clamp(coronaTight + coronaWide * 0.8, 0.0, 1.0) * outside;
@@ -170,13 +178,13 @@ void main() {
     float filament = fbm3(vec3(sp3.x * 0.7, sp3.y * 1.9, sp3.z * 0.7) + warp * 0.8);
 
     // 어두운 실루엣 — 빛이 닿기 전 표면
-    vec3 dark = vec3(0.075, 0.028, 0.018);
+    vec3 dark = uPal[PAL_BODY_DARK];
 
     // 빛이 닿은 표면 — 홍염 그라데이션. 보이는 부분이 림 근처(t≈1)에 몰려 있으므로
     // edge 톤도 충분히 밝게 유지해야 '채워짐'이 읽힌다.
-    vec3 core = vec3(0.34, 0.12, 0.05);
-    vec3 mid = vec3(0.26, 0.09, 0.036);
-    vec3 edge = vec3(0.15, 0.058, 0.028);
+    vec3 core = uPal[PAL_BODY_CORE];
+    vec3 mid = uPal[PAL_BODY_MID];
+    vec3 edge = uPal[PAL_BODY_EDGE];
 
     vec3 litBody = mix(core, mid, smoothstep(0.10, 0.50, t));
     litBody = mix(litBody, edge, smoothstep(0.60, 0.98, t));
@@ -191,10 +199,10 @@ void main() {
     vec3 body = mix(dark, litBody, lit);
 
     body *= 1.0 - smoothstep(0.80, 1.0, t) * 0.30;
-    body += vec3(0.90, 0.55, 0.30) * smoothstep(0.90, 1.0, t) * 0.10;
+    body += uPal[PAL_RIM_GLOW] * smoothstep(0.90, 1.0, t) * 0.10;
 
     float limbLine = smoothstep(0.980, 0.998, t) * (1.0 - smoothstep(0.996, 1.0, t));
-    body += vec3(1.0, 0.80, 0.50) * limbLine
+    body += uPal[PAL_LIMB_GOLD] * limbLine
       * mix(0.55, mix(0.30, 0.95, uLight), uTheme);
 
     // 다크는 우주색 위 가산, 라이트는 행성색으로 대체(밝은 배경 위 클리핑 방지).
@@ -206,7 +214,7 @@ void main() {
   // 경계선이 행성 밖 우주 배경까지 가로지르지 않는다.
   float midFill = 1.0 - smoothstep(0.30, 0.70, abs(uLight * 2.0 - 1.0));
   float terminator = exp(-abs(dist - rLine) * 22.0) * midFill * (1.0 - outside);
-  col = mix(col, vec3(1.0, 0.70, 0.40), terminator * 0.30);
+  col = mix(col, uPal[PAL_TERMINATOR_GOLD], terminator * 0.30);
 
   // 라이트 금환일식 — 스크롤에 따라 태양과 같은 크기의 달이 아래에서 떠올라
   // 태양을 물어 덮고, 완식에서는 다크 모드의 빛 채움과 같은 범위까지 원반을
@@ -232,41 +240,41 @@ void main() {
   // 하늘이 살짝 가라앉아 고리의 백열을 받쳐낸다(실제 금환일식도 하늘은 밝다).
   float sunOuter = max(sunEdge, 0.0);
   float sway = fbm(dir * 1.3 + vec2(uTime * 0.015, -uTime * 0.01));
-  vec3 sky = vec3(0.945, 0.945, 0.952);
-  sky = mix(sky, sky * vec3(0.968, 0.948, 0.918), exp(-sunOuter / 0.18));
-  sky = mix(sky, sky * vec3(0.94, 0.925, 0.90), uLight * exp(-sunOuter / 0.12) * 0.8);
+  vec3 sky = uPal[PAL_SKY_CREAM];
+  sky = mix(sky, sky * uPal[PAL_DUSK_TINT], exp(-sunOuter / 0.18));
+  sky = mix(sky, sky * uPal[PAL_DUSK_DIM], uLight * exp(-sunOuter / 0.12) * 0.8);
 
   // 백열 광구 — 테이트 헤일로·미드 블룸·와이드 워시 3단 감쇠. rest에서도
   // 태양 외곽선이 은은하게 빛을 발산한다.
-  vec3 blaze = vec3(1.0, 0.96, 0.87);
+  vec3 blaze = uPal[PAL_BLAZE];
   float halo = exp(-sunOuter / 0.009) * 0.62;
   float bloom = exp(-sunOuter / 0.04) * (0.42 + 0.08 * sway);
   float wash = exp(-sunOuter / 0.16) * 0.16;
   float aura = exp(-sunOuter / 0.02) * 0.28;
-  sky = mix(sky, vec3(1.0, 0.90, 0.70), clamp(halo + bloom + aura, 0.0, 1.0));
+  sky = mix(sky, uPal[PAL_HALO_GOLD], clamp(halo + bloom + aura, 0.0, 1.0));
   sky += blaze * wash * (1.0 - uLight * 0.35);
 
   // 원반 — 백열 태양과 그 위에 물리는 잉크빛 달. 접촉부는 서로를 밝게 태우고,
   // 달 림으로는 그 빛이 살짝 감겨 들어온다. exp 인자는 화면 끝에서 달이 멀어질 때
   // 오버픒로 INF→NaN(검은 코너)이 되지 않게 0 이하로 클램프한다 — 이 항은
   // 달 원반 내부(moonEdge≤0)에서만 의미가 있다.
-  vec3 moonCol = vec3(0.115, 0.12, 0.145);
-  moonCol += vec3(1.0, 0.80, 0.55) * exp(min(moonEdge, 0.0) / 0.012) * 0.22 * uLight;
+  vec3 moonCol = uPal[PAL_MOON_INK];
+  moonCol += uPal[PAL_MOON_RIM] * exp(min(moonEdge, 0.0) / 0.012) * 0.22 * uLight;
   vec3 disk = blaze * (0.975 + 0.025 * sway);
-  disk += vec3(0.07, 0.056, 0.032) * exp(-max(moonEdge, 0.0) / 0.02) * sunMask;
+  disk += uPal[PAL_DISK_WARM] * exp(-max(moonEdge, 0.0) / 0.02) * sunMask;
   disk *= 1.0 - smoothstep(-0.10, 0.0, sunEdge) * 0.05;
   vec3 eclipse = mix(sky, mix(disk, moonCol, moonMask), sunMask);
 
   // 다이아몬드 빛 — 달이 물러 붙는 동안 접촉 림 위로 스치는 빛 한 점.
   float beadPhase = smoothstep(0.55, 0.8, uLight) * (1.0 - smoothstep(0.93, 1.0, uLight));
   float bead = beadPhase * exp(-abs(moonEdge) / 0.006) * pow(max(moonDir.y, 0.0), 8.0);
-  eclipse += vec3(1.0, 0.97, 0.90) * bead * (sunMask * 1.0 + 0.3);
+  eclipse += uPal[PAL_BEAD] * bead * (sunMask * 1.0 + 0.3);
 
   // 빛 고리 — 달이 제자리에 착지하면 림을 두른다. 다크 모드의 금색 림선에
   // 대응하는 라이트의 마무리.
   float ringI = smoothstep(0.82, 1.0, uLight);
   float ring = exp(-abs(sunEdge) / 0.008) * 1.1 + exp(-abs(sunEdge) / 0.028) * 0.5;
-  eclipse += vec3(1.0, 0.94, 0.82) * ring * ringI;
+  eclipse += uPal[PAL_RING_WHITE] * ring * ringI;
 
   col = mix(col, eclipse, uTheme);
 
@@ -279,7 +287,7 @@ void main() {
   // 밤 페이드 — 런웨이 끝으로 갈수록 캔버스 하단부가 배경에 잠긴다.
   // 행성이 위로 떠나며 잘리는 면이 배경 속에 묻혀, 평평한 섹션 배경과 이어진다.
   // 다크/라이트 동일 — 두 테마의 행성 거동은 다크 기준으로 동기화한다.
-  vec3 pageBg = mix(vec3(0.102, 0.102, 0.11), vec3(0.965, 0.965, 0.968), uTheme);
+  vec3 pageBg = mix(uPal[PAL_PAGE_BG_DARK], uPal[PAL_PAGE_BG_LIGHT], uTheme);
   col = mix(col, pageBg, uNight * smoothstep(0.55, 1.0, 1.0 - vUv.y));
 
   gl_FragColor = vec4(col, 1.0);

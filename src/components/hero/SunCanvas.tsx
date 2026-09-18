@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useAnimationFrame, useReducedMotion } from "motion/react";
 import { smoothstep } from "../../lib/math";
+import { SUN_PALETTE, SUN_PALETTE_ORDER } from "./sunPalette";
 import { SUN_FRAGMENT, SUN_VERTEX } from "./sunShader";
 
 /**
@@ -38,6 +39,7 @@ type SunContext = {
     uLight: { value: number };
     uNight: { value: number };
     uTheme: { value: number };
+    uPal: { value: THREE.Vector3[] };
   };
   elapsed: number;
   /** 0(다크)~1(라이트)로 보간되는 현재 테마 값. */
@@ -75,6 +77,12 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
       uLight: { value: 0 },
       uNight: { value: 0 },
       uTheme: { value: 0 },
+      // 색 팔레트 — 값은 고정이라 생성 시 한 번만 채운다(sunPalette.ts가 소스).
+      uPal: {
+        value: SUN_PALETTE_ORDER.map(
+          (key) => new THREE.Vector3(...SUN_PALETTE[key]),
+        ),
+      },
     };
     const material = new THREE.ShaderMaterial({
       vertexShader: SUN_VERTEX,

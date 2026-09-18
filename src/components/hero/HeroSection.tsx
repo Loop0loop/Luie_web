@@ -1,5 +1,6 @@
 import type { RefObject } from "react";
 import { useScrollProgress } from "../../hooks/useScrollProgress";
+import { useI18n } from "../../i18n";
 import { smoothstep } from "../../lib/math";
 import { ChevronDownIcon } from "../ui/icons";
 import { HeroCopy } from "./HeroCopy";
@@ -18,13 +19,19 @@ type HeroSectionProps = {
  * 런웨이 진행도에 따라 빛이 아래에서 위로 차오른다.
  */
 export function HeroSection({ runwayRef }: HeroSectionProps) {
+  const t = useI18n();
   const progress = useScrollProgress(runwayRef);
 
   const copyOpacity = 1 - smoothstep(0.3, 0.75, progress);
   const hintOpacity = 1 - smoothstep(0.0, 0.12, progress);
 
   return (
-    <section ref={runwayRef} id="top" aria-label="Luie 소개" className={`relative ${RUNWAY_HEIGHT}`}>
+    <section
+      ref={runwayRef}
+      id="top"
+      aria-label={t.hero.ariaLabel}
+      className={`relative ${RUNWAY_HEIGHT}`}
+    >
       <div className="sticky top-0 h-screen overflow-hidden">
         {/* 태양은 페이드하지 않는다 — 빛 채움(uLight)이 전부다.
             런웨이 끝에서 sticky가 풀리며 화면 위로 흘러간다. */}
@@ -46,7 +53,9 @@ export function HeroSection({ runwayRef }: HeroSectionProps) {
           style={{ opacity: hintOpacity }}
           className="absolute inset-x-0 bottom-8 z-10 flex flex-col items-center gap-1.5 text-subtle"
         >
-          <span className="text-[11px] font-medium tracking-[0.3em] uppercase">Scroll</span>
+          <span className="text-[11px] font-medium tracking-[0.3em] uppercase">
+            {t.hero.scroll}
+          </span>
           <ChevronDownIcon className="size-4 animate-bounce" />
         </div>
       </div>

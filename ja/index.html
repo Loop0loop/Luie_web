@@ -1,20 +1,20 @@
 <!doctype html>
-<html lang="ko" data-theme="dark">
+<html lang="ja" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Luie — 웹소설 작가를 위한 집필 워크스페이스</title>
+    <title>Luie — ウェブ小説作家のための執筆ワークスペース</title>
     <meta
       name="description"
-      content="원고, 세계관, 스냅샷, 내보내기를 하나의 흐름으로. 웹소설 작가를 위한 워드프로세서 Luie."
+      content="原稿、世界観、スナップショット、書き出しをひとつの流れで。ウェブ小説作家のためのワープロ Luie。"
     />
     <link rel="icon" type="image/png" href="/luie.png" />
     <link rel="apple-touch-icon" href="/luie.png" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a1c" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f6f7" />
 
-    <!-- TODO(SITE_URL): 도메인 확정 시 https://luie.app 일괄 교체 (SITE_URL으로 grep) -->
-    <link rel="canonical" href="https://luie.app/" />
+    <!-- TODO(SITE_URL): ドメイン確定時に https://luie.app を一括置換 (SITE_URL で grep) -->
+    <link rel="canonical" href="https://luie.app/ja/" />
     <link rel="alternate" hreflang="ko" href="https://luie.app/" />
     <link rel="alternate" hreflang="en" href="https://luie.app/en/" />
     <link rel="alternate" hreflang="ja" href="https://luie.app/ja/" />
@@ -22,30 +22,30 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Luie" />
-    <meta property="og:title" content="Luie — 웹소설 작가를 위한 집필 워크스페이스" />
+    <meta property="og:title" content="Luie — ウェブ小説作家のための執筆ワークスペース" />
     <meta
       property="og:description"
-      content="원고, 세계관, 스냅샷, 내보내기를 하나의 흐름으로. 웹소설 작가를 위한 워드프로세서 Luie."
+      content="原稿、世界観、スナップショット、書き出しをひとつの流れで。ウェブ小説作家のためのワープロ Luie。"
     />
-    <meta property="og:url" content="https://luie.app/" />
-    <!-- 임시 이미지(974×1024) — 1200×630 전용 OG 이미지 제작 시 교체 -->
+    <meta property="og:url" content="https://luie.app/ja/" />
+    <!-- 仮画像(974×1024) — 1200×630 専用 OG 画像を作成したら差し替え -->
     <meta property="og:image" content="https://luie.app/luie.png" />
-    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:locale:alternate" content="ko_KR" />
     <meta property="og:locale:alternate" content="en_US" />
-    <meta property="og:locale:alternate" content="ja_JP" />
 
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Luie — 웹소설 작가를 위한 집필 워크스페이스" />
+    <meta name="twitter:title" content="Luie — ウェブ小説作家のための執筆ワークスペース" />
     <meta
       name="twitter:description"
-      content="원고, 세계관, 스냅샷, 내보내기를 하나의 흐름으로. 웹소설 작가를 위한 워드프로세서 Luie."
+      content="原稿、世界観、スナップショット、書き出しをひとつの流れで。ウェブ小説作家のためのワープロ Luie。"
     />
     <meta name="twitter:image" content="https://luie.app/luie.png" />
   </head>
   <body>
     <div id="root"></div>
     <script>
-      // 첫 페인트 전에 저장된 테마(없으면 시스템 설정)를 적용해 플래시를 막는다.
+      // 初回ペイント前に保存テーマ(なければシステム設定)を適用してフラッシュを防ぐ。
       (function () {
         var saved = localStorage.getItem("luie-theme");
         var theme =

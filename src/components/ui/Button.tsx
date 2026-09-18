@@ -7,8 +7,9 @@ type ButtonSize = "sm" | "md" | "lg";
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
     "bg-gradient-to-b from-accent-strong to-accent text-on-accent shadow-cta hover:from-accent hover:to-accent-soft active:brightness-95",
+  // foreground 불투명도는 테마와 함께 반전된다 — white/x 고정값은 라이트에서 사라진다.
   ghost:
-    "border border-line-strong bg-white/5 text-body hover:border-white/25 hover:bg-white/10",
+    "border border-line-strong bg-foreground/5 text-body hover:border-foreground/25 hover:bg-foreground/10",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {

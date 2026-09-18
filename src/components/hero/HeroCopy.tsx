@@ -1,11 +1,8 @@
 import { motion, useReducedMotion } from "motion/react";
+import { useI18n } from "../../i18n";
 import { Button } from "../ui/Button";
 import { DownloadIcon } from "../ui/icons";
 import { TypingText } from "./TypingText";
-
-const TYPING_PHRASES = ["새로운 집필을 시작해보세요."] as const;
-// 렌더마다 새 배열이 만들어지면 TypingText 이펙트가 재시작하므로 참조를 고정한다.
-const PHRASES: string[] = [...TYPING_PHRASES];
 
 /** 페이지 진입 시 위→아래 순차 등장. */
 const CONTAINER_VARIANTS = {
@@ -25,6 +22,7 @@ const ITEM_VARIANTS = {
 } as const;
 
 export function HeroCopy() {
+  const t = useI18n();
   const reducedMotion = useReducedMotion();
 
   return (
@@ -38,15 +36,16 @@ export function HeroCopy() {
         variants={ITEM_VARIANTS}
         className="text-[clamp(2.5rem,6vw,4.75rem)] leading-[1.1] font-bold tracking-[-0.03em] text-foreground"
       >
-        이야기를 시작해보세요
+        {t.hero.headline}
       </motion.h1>
 
       <motion.p variants={ITEM_VARIANTS} className="mt-5 flex h-8 items-center text-lg text-muted">
-        <TypingText phrases={PHRASES} />
+        {/* 사전의 배열은 모듈 상수라 참조가 고정된다 — 이펙트가 재시작되지 않는다. */}
+        <TypingText phrases={t.hero.typingPhrases} />
       </motion.p>
 
       <motion.p variants={ITEM_VARIANTS} className="mt-3 text-sm text-subtle">
-        macOS · Windows 무료 — 원고는 언제나 내 컴퓨터에
+        {t.hero.sub}
       </motion.p>
 
       <motion.div
@@ -55,10 +54,10 @@ export function HeroCopy() {
       >
         <Button size="lg" href="#download">
           <DownloadIcon />
-          다운로드
+          {t.actions.download}
         </Button>
         <Button size="lg" variant="ghost" href="#features">
-          Luie 살펴보기
+          {t.actions.explore}
         </Button>
       </motion.div>
     </motion.div>

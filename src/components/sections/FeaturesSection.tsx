@@ -1,3 +1,4 @@
+import { useI18n } from "../../i18n";
 import { SectionStub } from "../home/SectionStub";
 
 /**
@@ -6,12 +7,14 @@ import { SectionStub } from "../home/SectionStub";
  * 실제 콘텐츠로 교체될 자리.
  */
 export function FeaturesSection() {
+  const t = useI18n();
+
   return (
     <SectionStub
       id="features"
       number="02"
-      title="Luie의 기능들"
-      hint="UI와 기능을 번호로 소개합니다"
+      title={t.sections.features.title}
+      hint={t.sections.features.hint}
     />
   );
 }
