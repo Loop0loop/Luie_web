@@ -43,6 +43,8 @@ export const SUN_PALETTE = {
   /** 밤 페이드가 캔버스를 잠그는 페이지 배경 — 다크/라이트. */
   pageBgDark: [0.102, 0.102, 0.11],
   pageBgLight: [0.965, 0.965, 0.968],
+  /** 일식 극대의 지평선 황혼 — 어두워진 하늘의 림을 도는 주황 빛. */
+  horizonGlow: [1.0, 0.62, 0.35],
 } as const;
 
 export type SunPaletteKey = keyof typeof SUN_PALETTE;

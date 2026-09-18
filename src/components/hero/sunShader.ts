@@ -11,7 +11,8 @@ import { SUN_PALETTE_GLSL, SUN_PALETTE_ORDER } from "./sunPalette";
  * - 림: 가장자리 다어케닝 후 얇은 금색 대기선
  * - 코로나: 금색, 넓고 낮은 강도로 천천히 숨쉬기
  * - 라이트: 금환일식(annular eclipse) 진행형 — 태양과 같은 크기의 달이 아래에서
- *   떠올라 태양을 물어 덮고(다크 채움과 동일 범위), 착지 시 림에 백열 빛 고리.
+ *   떠올라 태양을 물어 덮고(다크 채움과 동일 범위), 진행될수록 장면 전체의 낮빛이
+ *   떨어지며 태양 림을 따라 황혼이 돈다. 착지 시 림에 백열 빛 고리.
  *   무광 달 실루엣 + 3단 블룸, 하드 외곽선 없음.
  *
  * 색은 전부 uPal 유니폼(sunPalette.ts)에서 받는다. PAL_* 인덱스 상수는 팔레트
@@ -243,6 +244,13 @@ void main() {
   vec3 sky = uPal[PAL_SKY_CREAM];
   sky = mix(sky, sky * uPal[PAL_DUSK_TINT], exp(-sunOuter / 0.18));
   sky = mix(sky, sky * uPal[PAL_DUSK_DIM], uLight * exp(-sunOuter / 0.12) * 0.8);
+  // 일식 진행 피드백 — 달이 태양을 덮을수록 장면 전체의 낮빛이 떨어진다(실제
+  // 금환일식: 극대로 갈수록 하늘이 어두워진다). 위의 원반 근처 틴트와 달리 화면
+  // 전체에 걸리는 감쇠라 스크롤 중간에도 장면이 반응해 완식의 접근이 읽힌다.
+  float coverAmt = smoothstep(0.30, 1.0, uLight);
+  sky *= mix(vec3(1.0), uPal[PAL_DUSK_DIM] * 0.82, coverAmt * 0.85);
+  // 지평선 황혼 — 어두워진 하늘에서 태양(행성) 림을 따라 도는 주황 빛(360° 일몰).
+  sky += uPal[PAL_HORIZON_GLOW] * exp(-sunOuter / 0.09) * coverAmt * 0.10;
 
   // 백열 광구 — 테이트 헤일로·미드 블룸·와이드 워시 3단 감쇠. rest에서도
   // 태양 외곽선이 은은하게 빛을 발산한다.
@@ -252,7 +260,7 @@ void main() {
   float wash = exp(-sunOuter / 0.16) * 0.16;
   float aura = exp(-sunOuter / 0.02) * 0.28;
   sky = mix(sky, uPal[PAL_HALO_GOLD], clamp(halo + bloom + aura, 0.0, 1.0));
-  sky += blaze * wash * (1.0 - uLight * 0.35);
+  sky += blaze * wash * (1.0 - uLight * 0.5);
 
   // 원반 — 백열 태양과 그 위에 물리는 잉크빛 달. 접촉부는 서로를 밝게 태우고,
   // 달 림으로는 그 빛이 살짝 감겨 들어온다. exp 인자는 화면 끝에서 달이 멀어질 때
@@ -266,13 +274,15 @@ void main() {
   vec3 eclipse = mix(sky, mix(disk, moonCol, moonMask), sunMask);
 
   // 다이아몬드 빛 — 달이 물러 붙는 동안 접촉 림 위로 스치는 빛 한 점.
-  float beadPhase = smoothstep(0.55, 0.8, uLight) * (1.0 - smoothstep(0.93, 1.0, uLight));
+  // 창을 넓게 잡아 끝자락 감속(지수 꼬리) 구간과 겹쳐도 순간적으로 스치고 지나가지 않게 한다.
+  float beadPhase = smoothstep(0.45, 0.72, uLight) * (1.0 - smoothstep(0.86, 1.0, uLight));
   float bead = beadPhase * exp(-abs(moonEdge) / 0.006) * pow(max(moonDir.y, 0.0), 8.0);
   eclipse += uPal[PAL_BEAD] * bead * (sunMask * 1.0 + 0.3);
 
-  // 빛 고리 — 달이 제자리에 착지하면 림을 두른다. 다크 모드의 금색 림선에
-  // 대응하는 라이트의 마무리.
-  float ringI = smoothstep(0.82, 1.0, uLight);
+  // 빛 고리 — 달이 자리에 들어서면 림을 두르고 자라난다. 다크 모드의 금색 림선에
+  // 대응하는 라이트의 마무리. 램프를 일찍 열어 완등 감속 구간에서도 고리가
+  // 뭉개지지 않고 서서히 만개한다.
+  float ringI = smoothstep(0.60, 1.0, uLight);
   float ring = exp(-abs(sunEdge) / 0.008) * 1.1 + exp(-abs(sunEdge) / 0.028) * 0.5;
   eclipse += uPal[PAL_RING_WHITE] * ring * ringI;
 
