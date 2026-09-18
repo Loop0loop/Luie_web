@@ -18,13 +18,14 @@ export const SUN_LIGHT_END = 0.8;
 export const SUN_NIGHT_START = 0.82;
 export const SUN_NIGHT_END = 0.98;
 /**
- * 빛 채움 완등(끝자락)의 최소 시간(초). 채움은 스크롤을 그대로 따라가다가
- * 이 구간(SUN_FILL_TAIL_START부터 1.0, 마지막 25%)에서만 속도 상한을 받는다 —
- * 급스크롤로 진행도가 점프해도 완등 순간이 항상 눈에 보이는 속도로 마무리된다.
- * 다크 채움·라이트 일식(같은 uLight) 모두 적용, 테마 무관.
+ * 빛 채움 완등(끝자락)의 감속. 채움은 스크롤을 그대로 따라가다가 이 값(채움의
+ * 80%)부터 지수 감쇠 추적으로 전환한다 — 오차가 크면(급스크롤) 앞쪽에서 대부분
+ * 따라잡고 끝으로 갈수록 자연 감속하며 완결(등속 드래그 없음), 느린·보통 스크롤에선
+ * 추적이 거의 붙어 움직여 기존 감속 체감 그대로. RESPONSE_S는 감속 응답 시간
+ * (작을수록 빠른 마무리). 다크 채움·라이트 일식(같은 uLight) 모두 적용.
  */
-export const SUN_FILL_TAIL_START = 0.75;
-export const SUN_FILL_TAIL_MIN_DURATION_S = 0.6;
+export const SUN_FILL_TAIL_START = 0.8;
+export const SUN_FILL_TAIL_RESPONSE_S = 0.18;
 
 /* ── 사이트 헤더(SiteHeader) ── */
 

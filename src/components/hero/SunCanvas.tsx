@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useAnimationFrame, useReducedMotion } from "motion/react";
 import {
-  SUN_FILL_TAIL_MIN_DURATION_S,
+  SUN_FILL_TAIL_RESPONSE_S,
   SUN_FILL_TAIL_START,
   SUN_LIGHT_END,
   SUN_LIGHT_START,
@@ -152,21 +152,19 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
       document.documentElement.dataset.theme === "light" ? 1 : 0;
     ctx.theme += (themeTarget - ctx.theme) * Math.min(1, deltaSec * 7);
     // 빛 채움 — 기저(0→SUN_FILL_TAIL_START)는 스크롤 진행도를 그대로 따라간다
-    // (느린·보통 스크롤에서 원래 속도 그대로). 마지막 25% 꼬리만 프레임당 이동량을
-    // tail길이/SUN_FILL_TAIL_MIN_DURATION_S로 상한한다 — 급스크롤로 진행도가 점프해도
-    // 완등 순간은 항상 최소한 이 시간에 걸쳐 보이게 마무리된다(다크 채움·라이트
-    // 일식이 같은 uLight를 쓰므로 테마 무관). 위로 스크롤해 꼬리가 빠질 때도 대칭.
+    // (느린·보통 스크롤에서 원래 속도 그대로). 끝자락(마지막 20%)은 지수 감쇠로
+    // 목표를 추적한다: 오차가 큰 급스크롤에서는 앞쪽에서 대부분 따라잡고 끝으로
+    // 갈수록 자연 감속하며 완결(등속 드래그 없음 — 80%쯤에서 감속이 걸렸다 풀리는
+    // 프로파일), 느린 스크롤에선 추적이 거의 붙어 이동한다. 위로 스크롤해 꼬리가
+    // 빠질 때도 대칭, 다크 채움·라이트 일식이 같은 uLight라 테마 무관.
     const lightTarget = smoothstep(SUN_LIGHT_START, SUN_LIGHT_END, p);
     if (reduced) {
       ctx.lightTail = Math.max(lightTarget - SUN_FILL_TAIL_START, 0);
     } else {
       const tailTarget = Math.max(lightTarget - SUN_FILL_TAIL_START, 0);
-      const tailRate = (1 - SUN_FILL_TAIL_START) / SUN_FILL_TAIL_MIN_DURATION_S;
-      const maxStep = deltaSec * tailRate;
-      ctx.lightTail += Math.min(
-        maxStep,
-        Math.max(-maxStep, tailTarget - ctx.lightTail),
-      );
+      ctx.lightTail +=
+        (tailTarget - ctx.lightTail) *
+        (1 - Math.exp(-deltaSec / SUN_FILL_TAIL_RESPONSE_S));
     }
     ctx.uniforms.uTime.value = ctx.elapsed;
     ctx.uniforms.uSpin.value = reduced ? 0 : ctx.elapsed * SUN_SPIN_RAD_PER_SEC;
