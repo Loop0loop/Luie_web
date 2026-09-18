@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useI18n } from "../../i18n";
+import { THEME_STORAGE_KEY } from "../../lib/constants";
 
 type Theme = "dark" | "light";
 
 function initialTheme(): Theme {
   if (typeof window === "undefined") return "dark";
-  const saved = localStorage.getItem("luie-theme");
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
   if (saved === "light" || saved === "dark") return saved;
   return window.matchMedia("(prefers-color-scheme: light)").matches
     ? "light"
@@ -20,7 +21,7 @@ export function ThemeToggle() {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem("luie-theme", theme);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   return (

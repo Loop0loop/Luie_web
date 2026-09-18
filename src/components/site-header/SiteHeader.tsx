@@ -1,18 +1,24 @@
 import { useEffect, useState, type RefObject } from "react";
 import { motion } from "motion/react";
 import { useScrollProgress } from "../../hooks/useScrollProgress";
+import {
+  HEADER_DETACH_PROGRESS,
+  HEADER_EDGE_GAP_PX,
+  HEADER_MORPH_MIN_DURATION_S,
+  HEADER_PILL_MAX_WIDTH_PX,
+} from "../../lib/constants";
 import { cn } from "../../lib/cn";
 import { HeaderBar } from "./HeaderBar";
 
-/** 플로팅 필이 화면 좌우 여백과 거리를 두는 간격(px). */
-const EDGE_GAP = 16;
-/** 플로팅 상태에서의 필 최대 너비(px). */
-const PILL_MAX_WIDTH = 720;
-/** 히어로 런웨이에서 이 진행도를 지나면 헤더가 분리된다. */
-const DETACH_PROGRESS = 0.9;
-
-/** 물방울이 떨어지듯 히어로 아래에서 필이 성큼 떨어지는 spring. */
-const DETACH_SPRING = { type: "spring", stiffness: 320, damping: 24, mass: 0.9 } as const;
+/**
+ * 바→플로팅 필 모프 spring. duration 파라미터 스프링이라 급스크롤로 트리거가
+ * 점프해도 모프는 최소 HEADER_MORPH_MIN_DURATION_S에 걸쳐 진행된다.
+ */
+const DETACH_SPRING = {
+  type: "spring",
+  duration: HEADER_MORPH_MIN_DURATION_S,
+  bounce: 0.3,
+} as const;
 
 type SiteHeaderProps = {
   /** 히어로 섹션 ref. 런웨이 진행도 측정에 쓰인다. */
@@ -25,7 +31,7 @@ type SiteHeaderProps = {
  */
 export function SiteHeader({ heroRef }: SiteHeaderProps) {
   const progress = useScrollProgress(heroRef);
-  const floating = progress >= DETACH_PROGRESS;
+  const floating = progress >= HEADER_DETACH_PROGRESS;
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {
@@ -35,13 +41,13 @@ export function SiteHeader({ heroRef }: SiteHeaderProps) {
   }, []);
 
   const width = floating
-    ? Math.min(PILL_MAX_WIDTH, viewportWidth - EDGE_GAP * 2)
+    ? Math.min(HEADER_PILL_MAX_WIDTH_PX, viewportWidth - HEADER_EDGE_GAP_PX * 2)
     : viewportWidth;
 
   return (
     <motion.header
       initial={false}
-      animate={{ y: floating ? EDGE_GAP : 0 }}
+      animate={{ y: floating ? HEADER_EDGE_GAP_PX : 0 }}
       transition={DETACH_SPRING}
       className="fixed inset-x-0 top-0 z-50 flex justify-center"
     >
