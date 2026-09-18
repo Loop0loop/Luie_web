@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { useAnimationFrame, useReducedMotion } from "motion/react";
 import {
+  SUN_FILL_TAIL_MIN_DURATION_S,
+  SUN_FILL_TAIL_START,
   SUN_LIGHT_END,
   SUN_LIGHT_START,
   SUN_MAX_PITCH_RAD,
@@ -9,7 +11,6 @@ import {
   SUN_NIGHT_END,
   SUN_NIGHT_START,
   SUN_SPIN_RAD_PER_SEC,
-  SUN_FILL_MIN_DURATION_S,
 } from "../../lib/constants";
 import { smoothstep } from "../../lib/math";
 import { SUN_PALETTE, SUN_PALETTE_ORDER } from "./sunPalette";
@@ -44,8 +45,8 @@ type SunContext = {
   elapsed: number;
   /** 0(다크)~1(라이트)로 보간되는 현재 테마 값. */
   theme: number;
-  /** 빛 채움의 현재 값 — 스크롤 목표를 최소 지속 시간 속도로 쫓는다(아래 프레임 루프). */
-  light: number;
+  /** 채움 꼬리(마지막 25%)의 현재 값 — 기저는 스크롤 즉시 반영, 꼬리만 속도 제한(아래). */
+  lightTail: number;
   visible: boolean;
 };
 
@@ -101,7 +102,7 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
       uniforms,
       elapsed: 0,
       theme: document.documentElement.dataset.theme === "light" ? 1 : 0,
-      light: 0,
+      lightTail: 0,
       visible: true,
     };
     ctxRef.current = ctx;
@@ -150,21 +151,27 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
     const themeTarget =
       document.documentElement.dataset.theme === "light" ? 1 : 0;
     ctx.theme += (themeTarget - ctx.theme) * Math.min(1, deltaSec * 7);
-    // 빛 채움 — 스크롤 목표를 쫓되 초당 1/SUN_FILL_MIN_DURATION_S 이상 움직이지
-    // 못한다. 급스크롤로 진행도가 점프해도 채움은 항상 최소 시간에 걸쳐 진행된다
-    // (다크 채움·라이트 일식이 같은 uLight를 쓰므로 테마 무관). 반대 방향(위로
-    // 급스크롤해 빛이 빠질 때)도 대칭으로 같은 속도 제한을 받는다.
+    // 빛 채움 — 기저(0→SUN_FILL_TAIL_START)는 스크롤 진행도를 그대로 따라간다
+    // (느린·보통 스크롤에서 원래 속도 그대로). 마지막 25% 꼬리만 프레임당 이동량을
+    // tail길이/SUN_FILL_TAIL_MIN_DURATION_S로 상한한다 — 급스크롤로 진행도가 점프해도
+    // 완등 순간은 항상 최소한 이 시간에 걸쳐 보이게 마무리된다(다크 채움·라이트
+    // 일식이 같은 uLight를 쓰므로 테마 무관). 위로 스크롤해 꼬리가 빠질 때도 대칭.
     const lightTarget = smoothstep(SUN_LIGHT_START, SUN_LIGHT_END, p);
     if (reduced) {
-      ctx.light = lightTarget;
+      ctx.lightTail = Math.max(lightTarget - SUN_FILL_TAIL_START, 0);
     } else {
-      const maxStep = deltaSec / SUN_FILL_MIN_DURATION_S;
-      ctx.light += Math.min(maxStep, Math.max(-maxStep, lightTarget - ctx.light));
+      const tailTarget = Math.max(lightTarget - SUN_FILL_TAIL_START, 0);
+      const tailRate = (1 - SUN_FILL_TAIL_START) / SUN_FILL_TAIL_MIN_DURATION_S;
+      const maxStep = deltaSec * tailRate;
+      ctx.lightTail += Math.min(
+        maxStep,
+        Math.max(-maxStep, tailTarget - ctx.lightTail),
+      );
     }
     ctx.uniforms.uTime.value = ctx.elapsed;
     ctx.uniforms.uSpin.value = reduced ? 0 : ctx.elapsed * SUN_SPIN_RAD_PER_SEC;
     ctx.uniforms.uPitch.value = reduced ? 0 : p * SUN_MAX_PITCH_RAD;
-    ctx.uniforms.uLight.value = ctx.light;
+    ctx.uniforms.uLight.value = Math.min(lightTarget, SUN_FILL_TAIL_START) + ctx.lightTail;
     ctx.uniforms.uNight.value = smoothstep(SUN_NIGHT_START, SUN_NIGHT_END, p);
     ctx.uniforms.uTheme.value = ctx.theme;
     ctx.renderer.render(ctx.scene, ctx.camera);

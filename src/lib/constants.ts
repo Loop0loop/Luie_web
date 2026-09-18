@@ -18,11 +18,13 @@ export const SUN_LIGHT_END = 0.8;
 export const SUN_NIGHT_START = 0.82;
 export const SUN_NIGHT_END = 0.98;
 /**
- * 빛 채움의 최소 지속 시간(초). 채움 값은 스크롤 목표를 쫓되 이 속도(1/지속시간)를
- * 넘지 못한다 — 급스크롤로 진행도가 점프해도 다크 채움·라이트 일식(같은 uLight)은
- * 항상 최소한 이 시간에 걸쳐 진행된다. 테마 무관.
+ * 빛 채움 완등(끝자락)의 최소 시간(초). 채움은 스크롤을 그대로 따라가다가
+ * 이 구간(SUN_FILL_TAIL_START부터 1.0, 마지막 25%)에서만 속도 상한을 받는다 —
+ * 급스크롤로 진행도가 점프해도 완등 순간이 항상 눈에 보이는 속도로 마무리된다.
+ * 다크 채움·라이트 일식(같은 uLight) 모두 적용, 테마 무관.
  */
-export const SUN_FILL_MIN_DURATION_S = 1.6;
+export const SUN_FILL_TAIL_START = 0.75;
+export const SUN_FILL_TAIL_MIN_DURATION_S = 0.6;
 
 /* ── 사이트 헤더(SiteHeader) ── */
 
