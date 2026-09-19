@@ -18,21 +18,22 @@ type CardId = (typeof CARDS)[number]["id"];
 const DEMO_LOGICAL_WIDTH = 1440;
 const DEMO_LOGICAL_HEIGHT = 900;
 
-/** 뒤에 겹치는 카드 — 데모를 내리지 않고 앱 창 실루엣만 보여준다. */
+/** 뒤에 겹치는 카드 — 데모를 내리지 않고 앱 창 실루엣만 보여준다.
+ * 랜딩 컨텍스트에서 렌더되므로 랜딩 토큰만 쓴다(Luie 전용 클래스는 이 문서에 없다). */
 function CardBackdrop() {
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-12 shrink-0 items-center gap-2 border-b border-border bg-panel px-4">
-        <span className="size-2.5 rounded-full bg-element" />
-        <span className="size-2.5 rounded-full bg-element" />
-        <span className="size-2.5 rounded-full bg-element" />
+      <div className="flex h-12 shrink-0 items-center gap-2 border-b border-line bg-surface px-4">
+        <span className="size-2.5 rounded-full bg-elevated" />
+        <span className="size-2.5 rounded-full bg-elevated" />
+        <span className="size-2.5 rounded-full bg-elevated" />
       </div>
-      <div className="flex-1 bg-app p-8">
-        <div className="h-3 w-2/3 rounded-full bg-element" />
+      <div className="flex-1 bg-background p-8">
+        <div className="h-3 w-2/3 rounded-full bg-elevated" />
         <div className="mt-6 space-y-3">
-          <div className="h-2.5 w-full rounded-full bg-element" />
-          <div className="h-2.5 w-5/6 rounded-full bg-element" />
-          <div className="h-2.5 w-4/6 rounded-full bg-element" />
+          <div className="h-2.5 w-full rounded-full bg-elevated" />
+          <div className="h-2.5 w-5/6 rounded-full bg-elevated" />
+          <div className="h-2.5 w-4/6 rounded-full bg-elevated" />
         </div>
       </div>
     </div>
@@ -65,11 +66,20 @@ function DemoFrame({ card }: { card: CardId }) {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-hidden bg-app">
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-hidden bg-background"
+    >
+      {/* 로드 중 스켈레톤 — 빈 카드 대신 창 실루엣이 즉시 보인다.
+          iframe이 불투명하게 그려지면 자연히 가려진다. */}
+      <div className="absolute inset-0">
+        <CardBackdrop />
+      </div>
       <iframe
         title={t.showcase.tabs[card]}
         src={`/demo/?card=${card}&lang=${getLocale()}`}
-        className="absolute left-0 top-0 origin-top-left border-0 bg-app"
+        loading="lazy"
+        className="absolute left-0 top-0 origin-top-left border-0"
         style={{
           width: DEMO_LOGICAL_WIDTH,
           height: DEMO_LOGICAL_HEIGHT,
@@ -149,7 +159,7 @@ export function FeatureDeck() {
                 }}
                 transition={{ type: "spring", stiffness: 240, damping: 28 }}
                 style={{ zIndex: CARDS.length - offset }}
-                className="absolute inset-0 cursor-pointer overflow-hidden rounded-2xl border border-border bg-panel shadow-panel"
+                className="absolute inset-0 cursor-pointer overflow-hidden rounded-2xl border border-line bg-surface shadow-panel"
               >
                 {offset === 0 ? <DemoFrame card={card.id} /> : <CardBackdrop />}
               </motion.div>

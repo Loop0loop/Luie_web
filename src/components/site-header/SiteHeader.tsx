@@ -1,6 +1,6 @@
 import { useEffect, useState, type RefObject } from "react";
 import { motion } from "motion/react";
-import { useScrollProgress } from "../../hooks/useScrollProgress";
+import { useScrolledPast } from "../../hooks/useScrollProgress";
 import {
   HEADER_DETACH_PROGRESS,
   HEADER_EDGE_GAP_PX,
@@ -31,8 +31,8 @@ type SiteHeaderProps = {
  * 히어로를 지나면 물방울 떨어지듯 spring에 이끌려 리퀴드 글래스 플로팅 필로 변형된다.
  */
 export function SiteHeader({ heroRef }: SiteHeaderProps) {
-  const progress = useScrollProgress(heroRef);
-  const floating = progress >= HEADER_DETACH_PROGRESS;
+  // 파생 boolean만 구독 — 스크롤 매 프레임이 아니라 임계값 통과 시에만 리렌더.
+  const floating = useScrolledPast(heroRef, HEADER_DETACH_PROGRESS);
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {

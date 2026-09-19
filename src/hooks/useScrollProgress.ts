@@ -42,3 +42,43 @@ export function useScrollProgress(ref: RefObject<HTMLElement | null>): number {
 
   return progress;
 }
+
+/**
+ * 런웨이 진행도가 threshold를 넘었는지의 파생 boolean만 구독한다.
+ * 연속 진행도를 구독하는 것(rerender-derived-state 위반)과 달리
+ * 임계값을 통과할 때만 리렌더한다 — 헤더 플로팅 전환용.
+ */
+export function useScrolledPast(
+  ref: RefObject<HTMLElement | null>,
+  threshold: number,
+): boolean {
+  const [past, setPast] = useState(false);
+
+  useEffect(() => {
+    let raf = 0;
+
+    const update = () => {
+      raf = 0;
+      const el = ref.current;
+      if (!el) return;
+      const total = el.offsetHeight - window.innerHeight;
+      const next = total > 0 ? window.scrollY / total >= threshold : false;
+      setPast((prev) => (prev === next ? prev : next));
+    };
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [ref, threshold]);
+
+  return past;
+}

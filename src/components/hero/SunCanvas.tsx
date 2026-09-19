@@ -55,7 +55,20 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
   const ctxRef = useRef<SunContext | null>(null);
   const progressRef = useRef(progress);
   progressRef.current = progress;
+  // 테마 목표 — 프레임 루프가 DOM을 매번 읽지 않도록 속성 변경만 관찰해 ref에 둔다.
+  const themeTargetRef = useRef(0);
   const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const syncTheme = () => {
+      themeTargetRef.current = html.dataset.theme === "light" ? 1 : 0;
+    };
+    syncTheme();
+    const themeObserver = new MutationObserver(syncTheme);
+    themeObserver.observe(html, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => themeObserver.disconnect();
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -148,9 +161,7 @@ export function SunCanvas({ progress, className }: SunCanvasProps) {
     const reduced = reducedMotion ?? false;
     if (!reduced) ctx.elapsed += deltaSec;
     // 테마 전환은 색 크로스페이드라 reduced-motion에서도 부드럽게 따라가게 한다.
-    const themeTarget =
-      document.documentElement.dataset.theme === "light" ? 1 : 0;
-    ctx.theme += (themeTarget - ctx.theme) * Math.min(1, deltaSec * 7);
+    ctx.theme += (themeTargetRef.current - ctx.theme) * Math.min(1, deltaSec * 7);
     // 빛 채움 — 기저(0→SUN_FILL_TAIL_START)는 스크롤 진행도를 그대로 따라간다
     // (느린·보통 스크롤에서 원래 속도 그대로). 끝자락(마지막 20%)은 지수 감쇠로
     // 목표를 추적한다: 오차가 큰 급스크롤에서는 앞쪽에서 대부분 따라잡고 끝으로
