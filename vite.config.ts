@@ -24,6 +24,7 @@ export default defineConfig({
         main: root("index.html"),
         en: root("en/index.html"),
         ja: root("ja/index.html"),
+        demo: root("demo/index.html"),
       },
       output: {
         // three(600KB+)와 react/motion을 별도 청크로 분리해

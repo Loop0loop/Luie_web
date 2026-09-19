@@ -1,0 +1,38 @@
+/*
+ * Luie 임베디드 데모 엔트리 CSS — iframe 안에서만 살아간다.
+ * 랜딩 토큰(디자인 시스템)과 Luie renderer 토큰(실제 UI)을 한 문서에 모으고,
+ * Tailwind가 Luie 소스의 클래스를 스캔하게 한다. 랜딩 본체는 이 토큰들과
+ * 완전히 분리된다(토큰 이름 충돌 제거).
+ */
+@import "../styles/global.css";
+@import "../../Luie/src/renderer/src/styles/global.tokens.css";
+/* Tailwind v4가 Luie renderer 소스의 클래스(bg-panel, text-fg 등)를 스캔. */
+@source "../../Luie/src/renderer/src";
+
+/* 스마트링크 하이라이트 — Luie editor.css는 .tiptap 스코프라 02 데모의 정적
+   원고용으로 동일 규격(종류별 색 포함)을 전역으로 제공한다. */
+.smart-link-highlight {
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+  text-underline-offset: 3px;
+  transition: background-color 0.15s ease;
+}
+.smart-link-highlight:hover {
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+.smart-link-highlight[data-type="character"] {
+  color: #2563eb;
+}
+.smart-link-highlight[data-type="event"] {
+  color: #d97706;
+}
+.smart-link-highlight[data-type="faction"] {
+  color: #059669;
+}
+.smart-link-highlight[data-type="term"] {
+  color: #7c3aed;
+}

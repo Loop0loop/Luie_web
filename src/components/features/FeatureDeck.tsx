@@ -1,23 +1,16 @@
-import { lazy, Suspense, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { useI18n } from "../../i18n";
+import { getLocale, useI18n } from "../../i18n";
 import { cn } from "../../lib/cn";
-import { DemoStage } from "./DemoStage";
-import { LuieDemoGate } from "./LuieDemoGate";
-
-/* 데모는 실제 Luie renderer 코드(무겁다)라 활성 카드에 처음 마운트될 때 로드 —
-   히어로 초기 로드에는 영향이 없다. */
-const SnapshotDemo = lazy(() => import("./demos/SnapshotDemo"));
-const SmartLinkDemo = lazy(() => import("./demos/SmartLinkDemo"));
-const ResearchDemo = lazy(() => import("./demos/ResearchDemo"));
-const StorylineDemo = lazy(() => import("./demos/StorylineDemo"));
 
 const CARDS = [
-  { id: "snapshot", Demo: SnapshotDemo },
-  { id: "smartLink", Demo: SmartLinkDemo },
-  { id: "research", Demo: ResearchDemo },
-  { id: "storyline", Demo: StorylineDemo },
+  { id: "snapshot" },
+  { id: "smartLink" },
+  { id: "research" },
+  { id: "storyline" },
 ] as const;
+
+type CardId = (typeof CARDS)[number]["id"];
 
 /** 뒤에 겹치는 카드 — 데모를 내리지 않고 앱 창 실루엣만 보여준다. */
 function CardBackdrop() {
@@ -41,6 +34,24 @@ function CardBackdrop() {
 }
 
 /**
+ * 활성 카드 하나만 실제 Luie renderer 데모를 iframe(/demo 엔트리)으로 서빙한다.
+ * transform 축소가 아니라 실제 창 크기로 렌더 — 텍스트가 실제 픽셀 크기로
+ * 선명하고, 툴팁·모달이 iframe 뷰포트 안에서 정확히 동작한다. 테마·언어는
+ * 쿼리로 전달되고 테마 변경은 iframe이 부모 속성을 구독해 따라간다.
+ */
+function DemoFrame({ card }: { card: CardId }) {
+  const t = useI18n();
+
+  return (
+    <iframe
+      title={t.showcase.tabs[card]}
+      src={`/demo/?card=${card}&lang=${getLocale()}`}
+      className="h-full w-full border-0 bg-app"
+    />
+  );
+}
+
+/**
  * 02 기능 쇼케이스 — 좌측 기능별 빅 폰트 카피, 우측 4장 카드 덱(활성 카드만
  * 실제 Luie renderer UI 마운트), 하단 세그먼트 토글. 뒷카드를 클릭해도 앞으로 온다.
  */
@@ -48,14 +59,25 @@ export function FeatureDeck() {
   const t = useI18n();
   const [active, setActive] = useState(0);
   const activeCard = CARDS[active];
+  // 큰 화면에서 카드가 커지는 만큼 덱 오프셋도 비례 확대 (적응형 스텝).
+  const [spread, setSpread] = useState(
+    () => (window.matchMedia("(min-width: 1536px)").matches ? 30 : 22),
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1536px)");
+    const onChange = () => setSpread(mq.matches ? 30 : 22);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   return (
-    <div className="grid w-full max-w-[1240px] items-center gap-10 lg:grid-cols-[minmax(300px,4fr)_minmax(0,6fr)] lg:gap-16">
+    <div className="grid w-full max-w-[1240px] items-center gap-10 lg:grid-cols-[minmax(300px,4fr)_minmax(0,6fr)] lg:gap-16 2xl:max-w-[1560px] 2xl:gap-20 min-[2300px]:max-w-[1840px]">
       {/* 좌측 — 기능별로 교체되는 빅 폰트 + 서브 카피.
           AnimatePresence의 exit가 간헐적으로 완료되지 않아 텍스트가 멈추는
           (motion v13) 문제가 있어 key 리마운트 + 페이드인으로 전환한다. */}
       <div className="order-2 lg:order-1">
-        <p className="text-sm font-medium tracking-[0.2em] text-accent-soft">
+        <p className="text-sm font-medium tracking-[0.2em] text-accent-soft 2xl:text-base">
           {t.showcase.overline}
         </p>
         <div className="mt-4 min-h-[2.3em]">
@@ -64,7 +86,7 @@ export function FeatureDeck() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-            className="text-[clamp(2.4rem,4.6vw,4rem)] font-bold leading-[1.1] tracking-[-0.02em] text-foreground"
+            className="text-[clamp(2.4rem,4.6vw,6.75rem)] font-bold leading-[1.1] tracking-[-0.02em] text-foreground"
           >
             {t.showcase.tabs[activeCard.id]}
           </motion.h2>
@@ -74,7 +96,7 @@ export function FeatureDeck() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.06 }}
-          className="mt-4 max-w-[380px] text-base leading-relaxed text-muted"
+          className="mt-4 max-w-[380px] text-base leading-relaxed text-muted 2xl:max-w-[460px] 2xl:text-lg"
         >
           {t.showcase.sub[activeCard.id]}
         </motion.p>
@@ -85,14 +107,13 @@ export function FeatureDeck() {
         <div className="relative aspect-[16/10] w-full">
           {CARDS.map((card, i) => {
             const offset = (i - active + CARDS.length) % CARDS.length;
-            const Demo = card.Demo;
             return (
               <motion.div
                 key={card.id}
                 onClick={() => setActive(i)}
                 animate={{
-                  x: offset * 22,
-                  y: offset * -22,
+                  x: offset * spread,
+                  y: offset * -spread,
                   scale: 1 - offset * 0.045,
                   opacity: 1 - offset * 0.14,
                 }}
@@ -100,22 +121,12 @@ export function FeatureDeck() {
                 style={{ zIndex: CARDS.length - offset }}
                 className="absolute inset-0 cursor-pointer overflow-hidden rounded-2xl border border-border bg-panel shadow-panel"
               >
-                {offset === 0 ? (
-                  <LuieDemoGate>
-                    <DemoStage>
-                      <Suspense fallback={null}>
-                        <Demo />
-                      </Suspense>
-                    </DemoStage>
-                  </LuieDemoGate>
-                ) : (
-                  <CardBackdrop />
-                )}
+                {offset === 0 ? <DemoFrame card={card.id} /> : <CardBackdrop />}
               </motion.div>
             );
           })}
           {/* 실제 화면 배지 — 덱 프레임에 고정(카드 전환과 무관) */}
-          <span className="pointer-events-none absolute -top-3 left-5 z-50 rounded-full border border-line bg-surface px-3 py-1 text-[11px] font-medium text-muted shadow-panel">
+          <span className="pointer-events-none absolute -top-3 left-5 z-50 rounded-full border border-line bg-surface px-3 py-1 text-[11px] font-medium text-muted shadow-panel 2xl:text-xs">
             {t.showcase.badge}
           </span>
         </div>
@@ -125,7 +136,7 @@ export function FeatureDeck() {
           <div
             role="tablist"
             aria-label={t.showcase.overline}
-            className="flex gap-1 rounded-full border border-line bg-surface p-1"
+            className="flex gap-1 rounded-full border border-line bg-surface p-1 2xl:gap-1.5 2xl:p-1.5"
           >
             {CARDS.map((card, i) => (
               <button
@@ -135,7 +146,7 @@ export function FeatureDeck() {
                 aria-selected={i === active}
                 onClick={() => setActive(i)}
                 className={cn(
-                  "relative rounded-full px-4 py-1.5 text-sm transition-colors duration-200",
+                  "relative rounded-full px-4 py-1.5 text-sm transition-colors duration-200 2xl:px-5 2xl:py-2 2xl:text-base",
                   i === active
                     ? "text-on-accent"
                     : "text-muted hover:text-foreground",
