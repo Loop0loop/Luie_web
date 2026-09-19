@@ -47,6 +47,52 @@ const ja: Dictionary = {
       hint: "よくある質問と交流チャンネル",
     },
   },
+  /** 02 機能ショーケース — 実際のLuie renderer UIをサービするカードデッキ。 */
+  showcase: {
+    overline: "Luieの機能",
+    badge: "実際のLuie画面",
+    tabs: {
+      snapshot: "スナップショット",
+      smartLink: "スマートリンク",
+      research: "資料",
+      storyline: "ストーリーライン",
+    },
+    sub: {
+      snapshot:
+        "いつでも戻れる原稿。保存時点に巻き戻し、変更された文をひと目で比較できます。",
+      smartLink:
+        "キャラクター・イベント・勢力・用語が原稿の中で生きて動きます。下線の固有名詞にホバーしてみてください。",
+      research:
+        "キャラクター、イベント、勢力 — 世界観の資料がいつも手元に。",
+      storyline: "事件の流れを一枚に。ストーリーラインは近日公開。",
+    },
+    snapshot: {
+      panelTitle: "スナップショット",
+      autoSave: "自動保存",
+      manualSave: "手動保存",
+      time2h: "2時間前",
+      time3d: "3日前",
+    },
+    smartLink: {
+      hint: "下線の固有名詞にマウスを合わせてみてください — 実際のエディタのスマートリンクです。",
+    },
+    research: {
+      tabs: {
+        character: "キャラクター",
+        event: "イベント",
+        faction: "勢力",
+      },
+      groups: {
+        character: "登場人物",
+        event: "イベント記録",
+        faction: "勢力",
+      },
+      noDescription: "説明がありません",
+    },
+    storyline: {
+      comingSoon: "ストーリーラインは準備中です",
+    },
+  },
   brand: {
     homeAria: "Luieホームへ移動",
   },

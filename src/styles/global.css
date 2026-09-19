@@ -3,6 +3,13 @@
    본문에 쓰인 글리프 청크만 로드한다. */
 @import "@fontsource-variable/inter";
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+/* Luie 앱 실제 UI 토큰 — 임베디드 데모(02 섹션)가 실제 renderer 컴포넌트를
+   그대로 렌더하는 데 필요. @theme 토큰이 랜딩 토큰과 병합되고 data-theme
+   속성(다크=#1a1a1c 축 동일)을 두 앱이 공유한다. */
+@import "../../Luie/src/renderer/src/styles/global.tokens.css";
+/* Tailwind v4가 Luie renderer 소스의 클래스(bg-panel, text-fg 등)를
+   스캔하도록 명시(gitignore 여부와 무관하게 보장). */
+@source "../../Luie/src/renderer/src";
 @import "tailwindcss";
 
 /*
@@ -135,4 +142,32 @@ body {
 ::selection {
   background-color: color-mix(in srgb, var(--accent) 35%, transparent);
   color: var(--foreground);
+}
+
+/* 스마트링크 하이라이트 — Luie editor.css는 .tiptap 스코프라 02 데모의 정적
+   원고용으로 동일 규격(종류별 색 포함)을 전역으로 제공한다. */
+.smart-link-highlight {
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 1px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+  text-underline-offset: 3px;
+  transition: background-color 0.15s ease;
+}
+.smart-link-highlight:hover {
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+.smart-link-highlight[data-type="character"] {
+  color: #2563eb;
+}
+.smart-link-highlight[data-type="event"] {
+  color: #d97706;
+}
+.smart-link-highlight[data-type="faction"] {
+  color: #059669;
+}
+.smart-link-highlight[data-type="term"] {
+  color: #7c3aed;
 }

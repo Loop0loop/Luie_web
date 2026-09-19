@@ -49,6 +49,52 @@ const ko = {
       hint: "자주 묻는 질문과 소통 채널",
     },
   },
+  /** 02 기능 쇼케이스 — 실제 Luie renderer UI를 서빙하는 카드 덱. */
+  showcase: {
+    overline: "Luie의 기능들",
+    badge: "실제 Luie 화면",
+    tabs: {
+      snapshot: "스냅샷",
+      smartLink: "스마트 링크",
+      research: "자료",
+      storyline: "스토리 라인",
+    },
+    sub: {
+      snapshot:
+        "언제든 돌아가는 원고. 저장 시점으로 되돌리고, 변경된 문장을 한눈에 비교합니다.",
+      smartLink:
+        "캐릭터 · 사건 · 세력 · 용어가 원고 안에서 살아 움직입니다. 밑줄 친 고유명사에 올려보세요.",
+      research:
+        "캐릭터, 사건, 세력 — 세계관 자료가 언제나 손끝에 있습니다.",
+      storyline: "사건의 흐름을 한 장으로. 스토리 라인은 곧 만나요.",
+    },
+    snapshot: {
+      panelTitle: "스냅샷",
+      autoSave: "자동 저장",
+      manualSave: "수동 저장",
+      time2h: "2시간 전",
+      time3d: "3일 전",
+    },
+    smartLink: {
+      hint: "밑줄 친 고유명사에 마우스를 올려보세요 — 실제 에디터의 스마트 링크입니다.",
+    },
+    research: {
+      tabs: {
+        character: "캐릭터",
+        event: "사건",
+        faction: "세력",
+      },
+      groups: {
+        character: "등장 인물",
+        event: "사건 기록",
+        faction: "세력",
+      },
+      noDescription: "설명이 없습니다",
+    },
+    storyline: {
+      comingSoon: "스토리 라인은 준비 중입니다",
+    },
+  },
   brand: {
     homeAria: "Luie 홈으로 이동",
   },

@@ -5,8 +5,16 @@ import { defineConfig } from "vite";
 
 const root = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 
+// Luie 앱(별도 클론)의 실제 renderer UI를 임베디드 데모로 서빙한다.
+// 복사가 아니라 alias 임포트 — 앱 코드가 바뀌면 랜딩 데모도 그대로 따라간다.
+const luieAliases = {
+  "@renderer": root("Luie/src/renderer/src"),
+  "@shared": root("Luie/src/shared"),
+};
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: { alias: luieAliases },
   // 언어별 정적 엔트리(/, /en/, /ja/) — SPA 폴백을 끊고 각 경로가
   // 자기 index.html을 서빙하게 한다(dev·preview·정적 호스팅 모두 동일 규칙).
   appType: "mpa",

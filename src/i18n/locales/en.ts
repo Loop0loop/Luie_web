@@ -47,6 +47,52 @@ const en: Dictionary = {
       hint: "Frequently asked questions and community channels",
     },
   },
+  /** 02 feature showcase — a card deck serving the real Luie renderer UI. */
+  showcase: {
+    overline: "Luie's features",
+    badge: "Actual Luie screen",
+    tabs: {
+      snapshot: "Snapshots",
+      smartLink: "Smart Links",
+      research: "Research",
+      storyline: "Story Line",
+    },
+    sub: {
+      snapshot:
+        "Manuscripts you can always return to. Roll back to any save point and compare changed sentences at a glance.",
+      smartLink:
+        "Characters, events, factions and terms live inside your manuscript. Hover the underlined names.",
+      research:
+        "Characters, events, factions — your worldbuilding is always at your fingertips.",
+      storyline: "The whole arc on one canvas. Story Line is coming soon.",
+    },
+    snapshot: {
+      panelTitle: "Snapshots",
+      autoSave: "Auto save",
+      manualSave: "Manual save",
+      time2h: "2 hours ago",
+      time3d: "3 days ago",
+    },
+    smartLink: {
+      hint: "Hover the underlined names — these are the real editor's smart links.",
+    },
+    research: {
+      tabs: {
+        character: "Characters",
+        event: "Events",
+        faction: "Factions",
+      },
+      groups: {
+        character: "Cast",
+        event: "Event records",
+        faction: "Factions",
+      },
+      noDescription: "No description",
+    },
+    storyline: {
+      comingSoon: "Story Line is coming soon",
+    },
+  },
   brand: {
     homeAria: "Go to the Luie home page",
   },
