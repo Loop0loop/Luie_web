@@ -31,6 +31,8 @@ export const SUN_FILL_TAIL_RESPONSE_S = 0.18;
 
 /** 플로팅 필이 화면 좌우 여백과 두는 간격(px). */
 export const HEADER_EDGE_GAP_PX = 16;
+/** 플로팅 상태에서 상단 떨어진 거리(px). */
+export const HEADER_FLOAT_TOP_PX = 28;
 /** 플로팅 상태 필 최대 너비(px). */
 export const HEADER_PILL_MAX_WIDTH_PX = 720;
 /** 히어로 런웨이에서 이 진행도를 지나면 헤더가 분리된다. */

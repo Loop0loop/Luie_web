@@ -35,7 +35,7 @@ export default function SnapshotDemo() {
       <div className="flex min-h-0 flex-1">
         {/* 원고 본문 */}
         <div className="flex min-w-0 flex-1 justify-center overflow-hidden px-10 py-8">
-          <div className="max-w-[560px] whitespace-pre-wrap text-[15px] leading-[1.9] text-fg">
+          <div className="max-w-[760px] whitespace-pre-wrap text-[15px] leading-[1.9] text-fg">
             {CURRENT_MANUSCRIPT}
           </div>
         </div>

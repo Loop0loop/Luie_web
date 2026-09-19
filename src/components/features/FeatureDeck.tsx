@@ -102,11 +102,12 @@ export function FeatureDeck() {
   }, []);
 
   return (
-    <div className="grid w-full max-w-[1240px] items-center gap-10 lg:grid-cols-[minmax(280px,3fr)_minmax(0,7fr)] lg:gap-24 2xl:max-w-[1560px] 2xl:gap-32 min-[2300px]:max-w-[1840px]">
-      {/* 좌측 — 기능별로 교체되는 빅 폰트 + 서브 카피.
+    <div className="grid w-full max-w-[1280px] items-center gap-10 lg:grid-cols-[minmax(280px,3fr)_minmax(0,7fr)] lg:gap-24 2xl:max-w-[1720px] 2xl:gap-32 min-[2300px]:max-w-[2080px]">
+      {/* 좌측 — 기능별로 교체되는 빅 폰트 + 서브 카피. 컨테이너 쿼리로 폰트가
+          열 폭에 비례해 "스마트 링크"가 한 줄을 유지한다(cqw = 열 폭 1%).
           AnimatePresence의 exit가 간헐적으로 완료되지 않아 텍스트가 멈추는
           (motion v13) 문제가 있어 key 리마운트 + 페이드인으로 전환한다. */}
-      <div className="order-2 lg:order-1">
+      <div className="order-2 @container lg:order-1">
         <p className="text-sm font-medium tracking-[0.2em] text-accent-soft 2xl:text-base">
           {t.showcase.overline}
         </p>
@@ -116,7 +117,7 @@ export function FeatureDeck() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
-            className="text-[clamp(2.4rem,4.6vw,6.75rem)] font-bold leading-[1.1] tracking-[-0.02em] text-foreground"
+            className="whitespace-nowrap text-[clamp(2.4rem,18cqw,6.5rem)] font-bold leading-[1.1] tracking-[-0.02em] text-foreground"
           >
             {t.showcase.tabs[activeCard.id]}
           </motion.h2>
@@ -145,7 +146,6 @@ export function FeatureDeck() {
                   x: offset * spread,
                   y: offset * -spread,
                   scale: 1 - offset * 0.045,
-                  opacity: 1 - offset * 0.14,
                 }}
                 transition={{ type: "spring", stiffness: 240, damping: 28 }}
                 style={{ zIndex: CARDS.length - offset }}

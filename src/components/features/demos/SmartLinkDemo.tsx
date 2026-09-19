@@ -21,7 +21,7 @@ function ManuscriptBody() {
 
   return (
     <div className="flex h-full justify-center overflow-hidden bg-app">
-      <div className="flex w-full max-w-[680px] flex-col px-10 py-10">
+      <div className="flex w-full max-w-[900px] flex-col px-12 py-12">
         <div className="mb-6 flex items-baseline justify-between">
           <h3 className="text-lg font-bold text-fg">1장. 첫눈</h3>
           <span className="text-xs text-muted">녹는 항구</span>

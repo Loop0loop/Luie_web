@@ -4,6 +4,7 @@ import { useScrollProgress } from "../../hooks/useScrollProgress";
 import {
   HEADER_DETACH_PROGRESS,
   HEADER_EDGE_GAP_PX,
+  HEADER_FLOAT_TOP_PX,
   HEADER_MORPH_MIN_DURATION_S,
   HEADER_PILL_MAX_WIDTH_PX,
 } from "../../lib/constants";
@@ -47,7 +48,7 @@ export function SiteHeader({ heroRef }: SiteHeaderProps) {
   return (
     <motion.header
       initial={false}
-      animate={{ y: floating ? HEADER_EDGE_GAP_PX : 0 }}
+      animate={{ y: floating ? HEADER_FLOAT_TOP_PX : 0 }}
       transition={DETACH_SPRING}
       className="fixed inset-x-0 top-0 z-50 flex justify-center"
     >
