@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { getLocale, useI18n } from "../../i18n";
 import { cn } from "../../lib/cn";
@@ -11,6 +11,12 @@ const CARDS = [
 ] as const;
 
 type CardId = (typeof CARDS)[number]["id"];
+
+/** 데모가 렌더되는 고정 논리 창 — 해상도와 무관하게 항상 같은 UI를 서빙한다.
+ * 1440×900(16:10)은 카드의 aspect 비율과 정확히 일치해 폭 기준 스케일이
+ * 꽉 차게 맞아떨어진다. */
+const DEMO_LOGICAL_WIDTH = 1440;
+const DEMO_LOGICAL_HEIGHT = 900;
 
 /** 뒤에 겹치는 카드 — 데모를 내리지 않고 앱 창 실루엣만 보여준다. */
 function CardBackdrop() {
@@ -35,25 +41,49 @@ function CardBackdrop() {
 
 /**
  * 활성 카드 하나만 실제 Luie renderer 데모를 iframe(/demo 엔트리)으로 서빙한다.
- * transform 축소가 아니라 실제 창 크기로 렌더 — 텍스트가 실제 픽셀 크기로
- * 선명하고, 툴팁·모달이 iframe 뷰포트 안에서 정확히 동작한다. 테마·언어는
- * 쿼리로 전달되고 테마 변경은 iframe이 부모 속성을 구독해 따라간다.
+ * iframe은 고정 논리 창(1440×900)으로 렌더하고 컨테이너 폭에 맞춰 스케일한다 —
+ * 어떤 해상도에서도 동일한 UI 비율이 보인다. 테마·언어는 쿼리로 전달되고
+ * 테마 변경은 iframe이 부모 속성을 구독해 따라간다.
  */
 function DemoFrame({ card }: { card: CardId }) {
   const t = useI18n();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const { width } = el.getBoundingClientRect();
+      if (width === 0) return;
+      setScale(width / DEMO_LOGICAL_WIDTH);
+    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <iframe
-      title={t.showcase.tabs[card]}
-      src={`/demo/?card=${card}&lang=${getLocale()}`}
-      className="h-full w-full border-0 bg-app"
-    />
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden bg-app">
+      <iframe
+        title={t.showcase.tabs[card]}
+        src={`/demo/?card=${card}&lang=${getLocale()}`}
+        className="absolute left-0 top-0 origin-top-left border-0 bg-app"
+        style={{
+          width: DEMO_LOGICAL_WIDTH,
+          height: DEMO_LOGICAL_HEIGHT,
+          transform: `scale(${scale})`,
+        }}
+      />
+    </div>
   );
 }
 
 /**
  * 02 기능 쇼케이스 — 좌측 기능별 빅 폰트 카피, 우측 4장 카드 덱(활성 카드만
  * 실제 Luie renderer UI 마운트), 하단 세그먼트 토글. 뒷카드를 클릭해도 앞으로 온다.
+ * 텍스트와 화면은 넉넉히 떨어뜨리고(30:70 + 넓은 gap), 화면이 주인공이다.
  */
 export function FeatureDeck() {
   const t = useI18n();
@@ -72,7 +102,7 @@ export function FeatureDeck() {
   }, []);
 
   return (
-    <div className="grid w-full max-w-[1240px] items-center gap-10 lg:grid-cols-[minmax(300px,4fr)_minmax(0,6fr)] lg:gap-16 2xl:max-w-[1560px] 2xl:gap-20 min-[2300px]:max-w-[1840px]">
+    <div className="grid w-full max-w-[1240px] items-center gap-10 lg:grid-cols-[minmax(280px,3fr)_minmax(0,7fr)] lg:gap-24 2xl:max-w-[1560px] 2xl:gap-32 min-[2300px]:max-w-[1840px]">
       {/* 좌측 — 기능별로 교체되는 빅 폰트 + 서브 카피.
           AnimatePresence의 exit가 간헐적으로 완료되지 않아 텍스트가 멈추는
           (motion v13) 문제가 있어 key 리마운트 + 페이드인으로 전환한다. */}
